@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{320C6C35-9F23-4446-B46D-C3B0F6B71B75}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "core", "core", "{75296A46-6331-4AFD-ABB5-93ECD05D6D5D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetProcessor.Data", "src\core\NetProcessor.Data\NetProcessor.Data.csproj", "{FE249C9F-693E-4C3F-8C2A-A94230ED19F8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F93A79F1-F0B0-444D-A809-9E56040099F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetProcessor.Tests", "tests\NetProcessor.Tests\NetProcessor.Tests.csproj", "{4D9DC181-ECF7-4A4B-8BC9-E9F88FC37240}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FE249C9F-693E-4C3F-8C2A-A94230ED19F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE249C9F-693E-4C3F-8C2A-A94230ED19F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE249C9F-693E-4C3F-8C2A-A94230ED19F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE249C9F-693E-4C3F-8C2A-A94230ED19F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D9DC181-ECF7-4A4B-8BC9-E9F88FC37240}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D9DC181-ECF7-4A4B-8BC9-E9F88FC37240}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D9DC181-ECF7-4A4B-8BC9-E9F88FC37240}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D9DC181-ECF7-4A4B-8BC9-E9F88FC37240}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{75296A46-6331-4AFD-ABB5-93ECD05D6D5D} = {320C6C35-9F23-4446-B46D-C3B0F6B71B75}
+		{FE249C9F-693E-4C3F-8C2A-A94230ED19F8} = {75296A46-6331-4AFD-ABB5-93ECD05D6D5D}
+		{4D9DC181-ECF7-4A4B-8BC9-E9F88FC37240} = {F93A79F1-F0B0-444D-A809-9E56040099F0}
+	EndGlobalSection
+EndGlobal
