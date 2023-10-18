@@ -4,30 +4,35 @@ namespace NetProcessor.Data.Importer;
 /// </summary>
 public class ImporterBuilder
 {
+      private ImporterSourceOptions _sourceOptions;
       public ImporterBuilder()
       {
-
+            _sourceOptions = new ImporterSourceOptions();
+      }
+      public ImporterBuilder FromSourceFile(Action<ImporterSourceOptions> actionOptions)
+      {
+            actionOptions(_sourceOptions);
+            return this;
       }
       public ISourceLocationConfiguration SetLocation(Action<ImporterLocationOptions> options)
       {
             throw new NotImplementedException();
       }
+      
+      
 }
+
+
+
 public interface ISourceLocationConfiguration
 {
-      public void SetSourcePath(string path);
+}
+public interface IDestinationConfiguration
+{
+
 }
 
 public class ImporterLocationOptions
 {
-}
-
-public class Test
-{
-      public Test()
-      {
-            var builder = new ImporterBuilder().SetLocation(options => {
-
-            }).
-      }
+      
 }
