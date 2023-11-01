@@ -14,3 +14,4 @@
 # Technologies and Dependencies
 
 - .NET
+",country,description,designation,points,price,province,region_1,region_2,variety,winery"
