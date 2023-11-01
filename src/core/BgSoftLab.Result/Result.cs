@@ -2,8 +2,8 @@
 
 public struct Result
 {
-      private readonly bool Success { get; }
-      private readonly string[] Errors { get; }
+      public readonly bool Success { get; }
+      public readonly string[] Errors { get; }
 
       public Result(bool success, string[] errors)
       {
@@ -11,17 +11,7 @@ public struct Result
             Success = success;
       }
 }
-public class CreateResult : IResult
-{
-      public Result Failure(string[] errors)
-      {
-            return new Result(false, errors);
-      }
-      public Result Ok()
-      {
-            return new Result(true, Array.Empty<string>());
-      }
-}
+
 
 public interface IResult
 {
