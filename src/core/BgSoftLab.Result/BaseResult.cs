@@ -61,14 +61,15 @@ public abstract class BaseResult
             _data = referenceData;
             _result = resultCreation.Failure(Errors.ToArray());
       }
-      public virtual (Result, T) GetResult<T>()
+      public virtual ResultData<T> GetResult<T>()
       {
             if (_data is null)
             {
                   throw new NullReferenceException(nameof(_data));
             }
-            return (_result, (T)_data);
+            return new ResultData<T>(_result, (T)_data);
       }
+      
 }
 
 public enum ResultStatus
