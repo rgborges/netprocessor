@@ -11,10 +11,3 @@ public struct Result
             Success = success;
       }
 }
-
-
-public interface IResult
-{
-      Result Failure(string[] errors);
-      Result Ok();
-}

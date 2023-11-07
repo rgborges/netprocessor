@@ -4,7 +4,7 @@ using NetProcessor.Data.Importer;
 
 
 string path = @"/home/rborges/tmp/datasets/winemag-data_first150k.csv";
-var fileInfo = new FileInfo(path);
+var file = new FileInfo(path);
 
 // var builder = new ImporterBuilder();
 
@@ -15,9 +15,24 @@ var fileInfo = new FileInfo(path);
 //       fileConfiguration.Delimeter = ';';
 // }).Read<ExampleDto>(MethodReadAll).ToJson();
 
-var importer = new CsvParser<DTO>(fileInfo, false);
-var result = importer.ReadAll();
 
+
+
+var result = new CsvParser<DTO>(file, options => {
+      options.ColumnDelimiterChar = ',';
+      options.UseSmallCasePropertiesComparison = true;
+}).ReadAll();
+
+if (!result.Success)
+{
+      System.Console.WriteLine("Errors has occured:");
+      foreach(string s in result.Errors)
+      {
+            System.Console.WriteLine(s);
+      }
+}
+
+System.Console.WriteLine("It was successfull");
 // var runner = builder.Build();
 
 // runner.Run();

@@ -1,13 +1,15 @@
 namespace BgSoftLab.Results;
 
-public class CreateResult : IResult
+internal class CreateResult
 {
-      public Result Failure(string[] errors)
+      internal Result Failure(string[] errors)
       {
             return new Result(false, errors);
       }
-      public Result Ok()
+
+      internal Result Ok()
       {
             return new Result(true, Array.Empty<string>());
       }
+
 }

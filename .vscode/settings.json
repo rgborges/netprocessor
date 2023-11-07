@@ -1,0 +1,4 @@
+{
+      "dotnetAcquisitionExtension.installTimeoutValue": 3500,
+      "dotnet.defaultSolution": "disable"
+}

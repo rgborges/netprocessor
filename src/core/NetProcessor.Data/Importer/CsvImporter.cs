@@ -8,14 +8,20 @@ public class CsvParser<TRecord>
 {
       private readonly FileInfo _fileInfo;
       private bool _useInvarianCulture;
-      private FileImporterOptions _fileImportOptions;
+      private readonly FileImporterOptions _fileImportOptions;
       public CsvParser(FileInfo fileInfo, bool useInvarianCulture)
       {
             _fileInfo = fileInfo;
             _useInvarianCulture = useInvarianCulture;
+            _fileImportOptions = new FileImporterOptions();
       }
       public CsvParser(FileInfo fileInfo, Action<FileImporterOptions> configAction)
       {
+            _fileInfo = fileInfo;
+            if (_fileImportOptions is null)
+            {
+                  _fileImportOptions = new FileImporterOptions();
+            }
             configAction(_fileImportOptions);
       }
       private Dictionary<string, Type> GenerateColumnsAndTypes()
@@ -27,7 +33,12 @@ public class CsvParser<TRecord>
                   var properties = type.GetProperties();
                   foreach (var property in properties)
                   {
-                        result.Add(property.Name, property.GetType());
+                        if (_fileImportOptions.UseSmallCasePropertiesComparison)
+                        {
+                              result.Add(property.Name.ToLower(), property.PropertyType);
+                              continue;
+                        }
+                        result.Add(property.Name, property.PropertyType);
                   }
                   return result;
             }
@@ -36,39 +47,52 @@ public class CsvParser<TRecord>
                   throw;
             }
       }
-      public Tuple<Result, IEnumerable<TRecord>> ReadAll()
+      public ParserResult ReadAll()
       {
             try
             {
-                  var result = new CreateResult();
+                  var result = new ParserResult();
+                  result.Start();
                   if (_fileInfo is null)
                   {
-                        return Tuple.Create(result.Failure(new string[] { "the file is null or not defined." }),
-                             Enumerable.Empty<TRecord>());
+                        result.FinishWithError(_fileInfo, "File info was not specified");
+                        return result;
                   }
 
                   if (_fileInfo.Extension != ".csv")
                   {
-                        return Tuple.Create(result.Failure(new[] { "File extention is not supported. Make sure it's a CSV file" }),
-                        Enumerable.Empty<TRecord>());
+                        result.FinishWithError(_fileInfo, "The file extentions is invalid");
+                        return result;
                   }
                   string file = _fileInfo?.FullName;
                   if (!_fileInfo.Exists)
                   {
-                        return Tuple.Create(
-                              result.Failure(new string[] { "the file is null or not defined." }),
-                              Enumerable.Empty<TRecord>());
-
+                        result.FinishWithError(_fileInfo, "The file doesn't exist");
+                        return result;
                   }
                   var content = File.ReadAllLines(file);
 
                   var fileHeaders = content[0].Split(_fileImportOptions.ColumnDelimiterChar);
                   //TODO: Verify if columns match with the headers
-                  var typeColumns = this.GenerateColumnsAndTypes();
+                  var typeColumns = this.GenerateColumnsAndTypes().Keys.ToArray<string>();
 
                   bool areEqual = StructuralComparisons.StructuralEqualityComparer.Equals(typeColumns, fileHeaders);
 
-                  return Tuple.Create(result.Ok(), Enumerable.Empty<TRecord>());
+                  if(!areEqual) 
+                  {
+                        foreach(string s in typeColumns)
+                        {
+                              result.AddError(string.Format("{0}:{1}",
+                              "Column from file doesn't match with type provided: ",
+                               s
+                               ));
+                        }
+                        return result;
+                  }
+
+                  result.Finish(content);
+
+                  return result;
             }
             catch
             {

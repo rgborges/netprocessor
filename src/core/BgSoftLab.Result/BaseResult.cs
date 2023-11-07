@@ -44,7 +44,15 @@ public abstract class BaseResult
             _stopwatch.Stop();
             _data = referenceData;
             _status = ResultStatus.Finished;
-            _result = new CreateResult().Ok();
+
+            if (_errors.Any())
+            {
+                  _result = new CreateResult().Failure(_errors.ToArray());
+            }
+            else
+            {
+                  _result = new CreateResult().Ok();
+            }
       }
       public virtual void AddError(string error)
       {
@@ -54,12 +62,13 @@ public abstract class BaseResult
       {
             _errors.Clear();
       }
-      public virtual void FinishWithError(object referenceData)
+      public virtual void FinishWithError(object referenceData, string error)
       {
             var resultCreation = new CreateResult();
             _stopwatch.Stop();
             _data = referenceData;
-            _result = resultCreation.Failure(Errors.ToArray());
+            _errors.Add(error);
+            _result = new CreateResult().Failure(_errors.ToArray());
       }
       public virtual ResultData<T> GetResult<T>()
       {
@@ -69,7 +78,7 @@ public abstract class BaseResult
             }
             return new ResultData<T>(_result, (T)_data);
       }
-      
+
 }
 
 public enum ResultStatus
