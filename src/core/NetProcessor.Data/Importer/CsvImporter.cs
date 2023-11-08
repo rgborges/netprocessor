@@ -78,9 +78,11 @@ public class CsvParser<TRecord>
 
                   bool areEqual = StructuralComparisons.StructuralEqualityComparer.Equals(typeColumns, fileHeaders);
 
-                  if(!areEqual) 
+                  var equalColumns = typeColumns.Intersect(fileHeaders);
+
+                  if (!areEqual && !equalColumns.Any())
                   {
-                        foreach(string s in typeColumns)
+                        foreach (string s in typeColumns)
                         {
                               result.AddError(string.Format("{0}:{1}",
                               "Column from file doesn't match with type provided: ",
@@ -90,8 +92,48 @@ public class CsvParser<TRecord>
                         return result;
                   }
 
-                  result.Finish(content);
+                  //TODO parser
 
+                  var data = ParseFromString(ref content, ref fileHeaders);
+
+                  result.Finish(data);
+
+                  return result;
+            }
+            catch
+            {
+                  throw;
+            }
+      }
+      private ICollection<TRecord> ParseFromString(ref string[] content, ref string[] columns)
+      {
+            var result = new List<TRecord>(content.Length);
+            var properties = typeof(TRecord).GetProperties();
+
+            try
+            {
+                  for (int i = 0; i < content.Length; i++)
+                  {
+                        //Condition to skip heder
+                        object record = new object();
+
+                        if (i == 0) { continue; }
+//TODO: In this case the description has ' sign, and this alse are the split char for this file. The description has "" sign, which means to do not 
+//consideer the commas.
+                        string[] splitRowData = content[i].Split(_fileImportOptions.ColumnDelimiterChar);
+
+                        if (columns.Length != splitRowData.Length)
+                        {
+                              return new List<TRecord>(1);
+                        }
+
+                        for (int j = 0; j < columns.Length; j++)
+                        {
+                              properties[i].SetValue(record, splitRowData[j]);
+                        }
+
+                        result.Add((TRecord)record);
+                  }
                   return result;
             }
             catch
