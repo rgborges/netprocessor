@@ -36,18 +36,18 @@ System.Console.WriteLine("It was successfull");
 // var runner = builder.Build();
 
 // runner.Run();
-public record struct DTO
+public class DTO
 {
-      public string Id {get; set;}
-      public string Country { get; set; }
-      public string Description { get; set; }
-      public string Designation { get; set; }
-      public string Points { get; set; }
-      public string Price { get; set; }
-      public string Province { get; set; }
-      public string Region_1 { get; set; }
-      public string Region_2 { get; set; }
-      public string Variety { get; set; }
-      public string Winery { get; set; }
+      public string Id { get; set; } = string.Empty;
+      public string Country { get; set; } = string.Empty;
+      public string Description { get; set; } = string.Empty;
+      public string Designation { get; set; } = string.Empty;
+      public string Points { get; set; } = string.Empty;
+      public string Price { get; set; } = string.Empty;
+      public string Province { get; set; } = string.Empty;
+      public string Region_1 { get; set; } = string.Empty;
+      public string Region_2 { get; set; } = string.Empty;
+      public string Variety { get; set; } = string.Empty;
+      public string Winery { get; set; } = string.Empty;
       //todo: Id,country,description,designation,points,price,province,region_1,region_2,variety,winery"
 }

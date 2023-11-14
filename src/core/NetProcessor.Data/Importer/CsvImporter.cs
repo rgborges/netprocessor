@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Reflection;
 using BgSoftLab.Results;
 using NetProcessor.Data.Importer;
 
@@ -115,24 +116,32 @@ public class CsvParser<TRecord>
                   for (int i = 0; i < content.Length; i++)
                   {
                         //Condition to skip heder
-                        object record = new object();
+                        TRecord generic = (TRecord)Activator.CreateInstance<TRecord>();
 
                         if (i == 0) { continue; }
-//TODO: In this case the description has ' sign, and this alse are the split char for this file. The description has "" sign, which means to do not 
-//consideer the commas.
+                        //TODO: In this case the description has ' sign, and this alse are the split char for this file. The description has "" sign, which means to do not 
+                        //consideer the commas.
                         string[] splitRowData = content[i].Split(_fileImportOptions.ColumnDelimiterChar);
 
-                        if (columns.Length != splitRowData.Length)
+                        var lineParsingResult = this.LineParserFunction(content[i]);
+
+                        var valueList = new List<string>();
+
+                        foreach (var item in lineParsingResult)
                         {
-                              return new List<TRecord>(1);
+                              valueList.Add(item.Item3);
                         }
 
-                        for (int j = 0; j < columns.Length; j++)
+                        if (valueList.Count != columns.Length)
                         {
-                              properties[i].SetValue(record, splitRowData[j]);
+                              throw new InvalidOperationException("The columns idenfied through type mismatch of identified values");
+                        }
+                        for (int j = 0; j < properties.Length; i++)
+                        {
+                              properties[j].SetValue(generic, valueList[j]);
                         }
 
-                        result.Add((TRecord)record);
+                        result.Add(generic);
                   }
                   return result;
             }
@@ -140,6 +149,56 @@ public class CsvParser<TRecord>
             {
                   throw;
             }
+      }
+
+      private List<Tuple<int, CsvTokens, string>> LineParserFunction(string line)
+      {
+            var result = new List<Tuple<int, CsvTokens, string>>();
+            int carriedge = 0;
+
+            CsvTokens tmp = CsvTokens.Undefined;
+
+            bool initiateStatement = false;
+
+            var rule = new Dictionary<char, CsvTokens>();
+            rule.Add(',', CsvTokens.EndOfColumn);
+            rule.Add('"', CsvTokens.InitiateStatement);
+            rule.Add('\n', CsvTokens.EndOfLine);
+
+            for (int i = 0; i < line.Length; i++)
+            {
+                  char c = line[i];
+                  if (rule.ContainsKey(c))
+                  {
+                        if (rule.TryGetValue(c, out tmp))
+                        {
+                              if (tmp == CsvTokens.InitiateStatement)
+                              {
+                                    if (initiateStatement)
+                                    {
+                                          initiateStatement = false;
+                                    }
+                                    else
+                                    {
+                                          initiateStatement = true;
+                                    }
+                                    continue;
+                              }
+                              if (initiateStatement)
+                              {
+                                    continue;
+                              }
+                              result.Add(Tuple.Create(i, tmp, line.Substring(carriedge, (i - carriedge))));
+                        }
+                        carriedge = i + 1;
+                  }
+                  if (i == line.Length - 1)
+                  {
+
+                        result.Add(Tuple.Create(i, tmp, line.Substring(carriedge, (i - carriedge))));
+                  }
+            }
+            return result;
       }
 
       public ParserResult Read()
@@ -150,4 +209,16 @@ public class CsvParser<TRecord>
             var data = result.GetResult<string[]>();
             return result;
       }
+
+
+}
+
+public enum CsvTokens
+{
+      EndOfColumn,
+      Content,
+      InitiateStatement,
+      FinishStatement,
+      EndOfLine,
+      Undefined
 }

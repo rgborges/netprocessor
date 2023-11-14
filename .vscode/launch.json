@@ -10,7 +10,7 @@
                   "request": "launch",
                   "preLaunchTask": "build",
                   // If you have changed target frameworks, make sure to update the program path.
-                  "program": "${workspaceFolder}/tests/NetProcessor.ResultStructure/bin/Debug/net8.0/NetProcessor.ResultStructure.dll",
+                  "program": "${workspaceFolder}/tests/NetProcessor.ResultStructure/bin/Debug/net6.0/NetProcessor.ResultStructure.dll",
                   "args": [],
                   "cwd": "${workspaceFolder}/tests/NetProcessor.ResultStructure",
                   // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
@@ -26,7 +26,7 @@
                   "request": "launch",
                   "preLaunchTask": "build",
                   // If you have changed target frameworks, make sure to update the program path.
-                  "program": "${workspaceFolder}/tests/NetProcessor.Tests/bin/Debug/net8.0/NetProcessor.Tests.dll",
+                  "program": "${workspaceFolder}/tests/NetProcessor.Tests/bin/Debug/net6.0/NetProcessor.Tests.dll",
                   "args": [],
                   "cwd": "${workspaceFolder}/tests/NetProcessor.Tests",
                   // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
