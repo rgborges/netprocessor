@@ -14,6 +14,7 @@ public abstract class BaseResult
       public IList<string> Errors { get => _errors; }
       public object? Data { get => _data; }
       public ResultStatus Status { get => _status; }
+
       public bool Success
       {
             get
@@ -21,6 +22,7 @@ public abstract class BaseResult
                   return _result.Success;
             }
       }
+      public long ElapsedTime { get => _stopwatch.ElapsedMilliseconds; }
       public BaseResult()
       {
             _stopwatch = new Stopwatch();
@@ -78,7 +80,6 @@ public abstract class BaseResult
             }
             return new ResultData<T>(_result, (T)_data);
       }
-
 }
 
 public enum ResultStatus

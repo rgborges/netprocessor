@@ -15,17 +15,14 @@ var file = new FileInfo(path);
 //       fileConfiguration.Delimeter = ';';
 // }).Read<ExampleDto>(MethodReadAll).ToJson();
 
-
-
-
 var result = new CsvParser<DTO>(file, options =>
 {
       options.ColumnDelimiterChar = ',';
       options.UseSmallCasePropertiesComparison = true;
 }).ReadAll();
 
-if (!result.Success)
 {
+  if (!result.Success)
       System.Console.WriteLine("Errors has occured:");
       foreach (string s in result.Errors)
       {

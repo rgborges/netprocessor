@@ -10,6 +10,8 @@ public class CsvParser<TRecord>
       private readonly FileInfo _fileInfo;
       private bool _useInvarianCulture;
       private readonly FileImporterOptions _fileImportOptions;
+
+      public int CurrentLine { get; private set; }
       public CsvParser(FileInfo fileInfo, bool useInvarianCulture)
       {
             _fileInfo = fileInfo;
@@ -74,7 +76,7 @@ public class CsvParser<TRecord>
                   var content = File.ReadAllLines(file);
 
                   var fileHeaders = content[0].Split(_fileImportOptions.ColumnDelimiterChar);
-                  //TODO: Verify if columns match with the headers
+                  
                   var typeColumns = this.GenerateColumnsAndTypes().Keys.ToArray<string>();
 
                   bool areEqual = StructuralComparisons.StructuralEqualityComparer.Equals(typeColumns, fileHeaders);
@@ -92,13 +94,16 @@ public class CsvParser<TRecord>
                         }
                         return result;
                   }
+                  var parserResult = ParseFromString(ref content, ref fileHeaders);
 
-                  //TODO parser
-
-                  var data = ParseFromString(ref content, ref fileHeaders);
-
-                  result.Finish(data);
-
+                  if (!parserResult.Result.Success)
+                  {
+                        foreach (string s in parserResult.Errors)
+                        {
+                              result.AddError(s);
+                        }
+                  }
+                  result.Finish(parserResult.GetResult<List<TRecord>>());
                   return result;
             }
             catch
@@ -106,22 +111,21 @@ public class CsvParser<TRecord>
                   throw;
             }
       }
-      private ICollection<TRecord> ParseFromString(ref string[] content, ref string[] columns)
+      private ParserResult ParseFromString(ref string[] content, ref string[] columns)
       {
-            var result = new List<TRecord>(content.Length);
+            var result = new ParserResult();
+            result.Start();
+            var dataResult = new List<TRecord>(content.Length);
             var properties = typeof(TRecord).GetProperties();
-
             try
             {
                   for (int i = 0; i < content.Length; i++)
                   {
-                        //Condition to skip heder
+                        this.CurrentLine = i;
+
                         TRecord generic = (TRecord)Activator.CreateInstance<TRecord>();
 
                         if (i == 0) { continue; }
-                        //TODO: In this case the description has ' sign, and this alse are the split char for this file. The description has "" sign, which means to do not 
-                        //consideer the commas.
-                        string[] splitRowData = content[i].Split(_fileImportOptions.ColumnDelimiterChar);
 
                         var lineParsingResult = this.LineParserFunction(content[i]);
 
@@ -129,20 +133,24 @@ public class CsvParser<TRecord>
 
                         foreach (var item in lineParsingResult)
                         {
-                              valueList.Add(item.Item3);
+                              if (item.Item3 is not null)
+                              {
+                                    valueList.Add(item.Item3);
+                              }
                         }
 
                         if (valueList.Count != columns.Length)
                         {
-                              throw new InvalidOperationException("The columns idenfied through type mismatch of identified values");
+                              result.AddError($"The columns idenfied through type mismatch of identified values line {CurrentLine}");
+                              continue;
                         }
-                        for (int j = 0; j < properties.Length; i++)
+                        for (int j = 0; j < properties.Length; j++)
                         {
                               properties[j].SetValue(generic, valueList[j]);
                         }
-
-                        result.Add(generic);
+                        dataResult.Add(generic);
                   }
+                  result.Finish(dataResult);
                   return result;
             }
             catch
@@ -150,7 +158,6 @@ public class CsvParser<TRecord>
                   throw;
             }
       }
-
       private List<Tuple<int, CsvTokens, string>> LineParserFunction(string line)
       {
             var result = new List<Tuple<int, CsvTokens, string>>();
@@ -200,7 +207,6 @@ public class CsvParser<TRecord>
             }
             return result;
       }
-
       public ParserResult Read()
       {
             var result = new ParserResult();
@@ -209,7 +215,6 @@ public class CsvParser<TRecord>
             var data = result.GetResult<string[]>();
             return result;
       }
-
 
 }
 
