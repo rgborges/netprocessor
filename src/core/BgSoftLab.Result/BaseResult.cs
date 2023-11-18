@@ -14,7 +14,6 @@ public abstract class BaseResult
       public IList<string> Errors { get => _errors; }
       public object? Data { get => _data; }
       public ResultStatus Status { get => _status; }
-
       public bool Success
       {
             get
@@ -26,8 +25,9 @@ public abstract class BaseResult
       public BaseResult()
       {
             _stopwatch = new Stopwatch();
+            _stopwatch.Start();
             _errors = new List<string>(10);
-            _status = ResultStatus.NotInitiated;
+            _status = ResultStatus.InProgress;
       }
       public virtual void Start()
       {

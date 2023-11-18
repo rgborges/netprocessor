@@ -15,3 +15,12 @@
 
 - .NET
 ",country,description,designation,points,price,province,region_1,region_2,variety,winery"
+
+
+## ClassDiagram
+
+### ImporterBuilder
+ 
+ Generates an importer builder object from a specified type. It can be:
+ - CSV Importer
+ - Json Importer

@@ -10,8 +10,12 @@ public class CsvParser<TRecord>
       private readonly FileInfo _fileInfo;
       private bool _useInvarianCulture;
       private readonly FileImporterOptions _fileImportOptions;
+      private Func<string[], ParserResult> _lineParserFunc;
 
+      #region  Properties
       public int CurrentLine { get; private set; }
+      #endregion
+
       public CsvParser(FileInfo fileInfo, bool useInvarianCulture)
       {
             _fileInfo = fileInfo;
@@ -50,12 +54,12 @@ public class CsvParser<TRecord>
                   throw;
             }
       }
-      public ParserResult ReadAll()
+      public ParserResult ReadAllLines()
       {
             try
             {
                   var result = new ParserResult();
-                  result.Start();
+
                   if (_fileInfo is null)
                   {
                         result.FinishWithError(_fileInfo, "File info was not specified");
@@ -76,7 +80,7 @@ public class CsvParser<TRecord>
                   var content = File.ReadAllLines(file);
 
                   var fileHeaders = content[0].Split(_fileImportOptions.ColumnDelimiterChar);
-                  
+
                   var typeColumns = this.GenerateColumnsAndTypes().Keys.ToArray<string>();
 
                   bool areEqual = StructuralComparisons.StructuralEqualityComparer.Equals(typeColumns, fileHeaders);
@@ -94,7 +98,24 @@ public class CsvParser<TRecord>
                         }
                         return result;
                   }
-                  var parserResult = ParseFromString(ref content, ref fileHeaders);
+
+                  ParserResult parserResult;
+
+                  if (_lineParserFunc is not null)
+                  {
+                        try
+                        {
+                              parserResult = _lineParserFunc(content);
+                        }
+                        catch
+                        {
+                              throw;
+                        }
+                  }
+                  else
+                  {
+                        parserResult = ParseFromString(ref content, ref fileHeaders);
+                  }
 
                   if (!parserResult.Result.Success)
                   {
@@ -157,6 +178,11 @@ public class CsvParser<TRecord>
             {
                   throw;
             }
+      }
+      public CsvParser<TRecord> SetLineParserFunction(Func<string[], ParserResult> lineFunc)
+      {
+            _lineParserFunc = lineFunc;
+            return this;
       }
       private List<Tuple<int, CsvTokens, string>> LineParserFunction(string line)
       {

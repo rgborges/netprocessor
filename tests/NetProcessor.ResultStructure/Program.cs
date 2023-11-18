@@ -23,7 +23,7 @@ foreach (string s in result.Errors)
 static TestResult Execute()
 {
       var result = new TestResult();
-      result.Start();
+      
       int[] resultData = new int[1000];
       for (int i = 0; i < 1000; i++)
       {

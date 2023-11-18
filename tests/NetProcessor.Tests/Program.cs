@@ -19,7 +19,11 @@ var result = new CsvParser<DTO>(file, options =>
 {
       options.ColumnDelimiterChar = ',';
       options.UseSmallCasePropertiesComparison = true;
-}).ReadAll();
+}).SetLineParserFunction( (string[] lines) => {
+      var result = new ParserResult();
+
+      return result;
+}).ReadAllLines();
 
 {
   if (!result.Success)
