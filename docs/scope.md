@@ -24,3 +24,11 @@
  Generates an importer builder object from a specified type. It can be:
  - CSV Importer
  - Json Importer
+
+
+
+
+
+#### CsvImporter
+
+The CsvImporter will be able to define the file caratcteristics and how it will process the line to parse from string.

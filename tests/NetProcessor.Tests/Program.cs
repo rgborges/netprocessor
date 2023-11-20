@@ -1,4 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using System.Runtime.CompilerServices;
 using NetProcessor.Data;
 using NetProcessor.Data.Importer;
 
@@ -19,20 +20,26 @@ var result = new CsvParser<DTO>(file, options =>
 {
       options.ColumnDelimiterChar = ',';
       options.UseSmallCasePropertiesComparison = true;
-}).SetLineParserFunction( (string[] lines) => {
-      var result = new ParserResult();
-
-      return result;
 }).ReadAllLines();
 
+var result2 = new CsvParser<DTO>(file, options =>
 {
-  if (!result.Success)
+      options.ColumnDelimiterChar = ',';
+}).OverrideColumnsConfiguration((config) =>
+{
+      config.Add(x => nameof(x.Id), "id", "System.Int32");
+      config.Add(x => nameof(x.Country), "country", "System.String");
+})
+.ReadAllLines();
+
+
+if (!result.Success)
       System.Console.WriteLine("Errors has occured:");
-      foreach (string s in result.Errors)
-      {
-            System.Console.WriteLine(s);
-      }
+foreach (string s in result.Errors)
+{
+      System.Console.WriteLine(s);
 }
+
 System.Console.WriteLine("It was successfull");
 // var runner = builder.Build();
 
