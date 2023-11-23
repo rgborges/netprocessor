@@ -2,12 +2,13 @@ using System.Collections;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Reflection.Metadata;
 using BgSoftLab.Results;
 using NetProcessor.Data.Importer;
 
 namespace NetProcessor.Data;
 
-public class CsvParser<T>
+public class CsvParser<T> : BaseImporter<T>
 {
       private readonly FileInfo _fileInfo;
       private bool _useInvarianCulture;
@@ -16,19 +17,11 @@ public class CsvParser<T>
       private Dictionary<string, Type> _columnsType;
       private ColumnTypeConfigurator<T> _columnConfigurator;
 
-      private DataSet _dataSet;
-
       #region  Properties
       public int CurrentLine { get; private set; }
       #endregion
       #region  Constructors
-      public CsvParser(FileInfo fileInfo, bool useInvarianCulture)
-      {
-            _fileInfo = fileInfo;
-            _useInvarianCulture = useInvarianCulture;
-            _fileImportOptions = new FileImporterOptions();
-      }
-      public CsvParser(string filePath, bool useInvarianCulture)
+      public CsvParser(string filePath, bool useInvarianCulture, ILineParserConverter<string, T> lineParser) : base(lineParser)
       {
             if (String.IsNullOrEmpty(filePath))
             {
@@ -39,9 +32,9 @@ public class CsvParser<T>
             _useInvarianCulture = useInvarianCulture;
             _fileImportOptions = new FileImporterOptions();
       }
-      public CsvParser(FileInfo fileInfo, Action<FileImporterOptions> configAction)
+      public CsvParser(string fileInfo, Action<FileImporterOptions> configAction, ILineParserConverter<string, T> lineParser) : base(lineParser)
       {
-            _fileInfo = fileInfo;
+            _fileInfo = new FileInfo(fileInfo);
 
             if (_fileImportOptions is null)
             {
@@ -192,6 +185,7 @@ public class CsvParser<T>
             return result;
       }
       #endregion
+      #region ParsingMethods
       public ParserResult ReadAllLines()
       {
             try
@@ -263,7 +257,6 @@ public class CsvParser<T>
                         }
                   }
                   result.Finish(parserResult.GetResult<List<T>>());
-
                   return result;
             }
             catch
@@ -271,6 +264,7 @@ public class CsvParser<T>
                   throw;
             }
       }
+      #endregion
 }
 
 public enum CsvTokens

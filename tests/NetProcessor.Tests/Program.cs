@@ -3,9 +3,7 @@ using System.Runtime.CompilerServices;
 using NetProcessor.Data;
 using NetProcessor.Data.Importer;
 
-
 string path = @"/home/rborges/tmp/datasets/winemag-data_first150k.csv";
-var file = new FileInfo(path);
 
 // var builder = new ImporterBuilder();
 
@@ -16,31 +14,33 @@ var file = new FileInfo(path);
 //       fileConfiguration.Delimeter = ';';
 // }).Read<ExampleDto>(MethodReadAll).ToJson();
 
-var result = new CsvParser<DTO>(file, options =>
-{
-      options.ColumnDelimiterChar = ',';
-      options.UseSmallCasePropertiesComparison = true;
-}).ReadAllLines();
+// //CASE 01 - Direct parsing into a list with traditional and consumming read method
+// var result = new CsvParser<DTO>(path, options =>
+// {
+//       options.ColumnDelimiterChar = ',';
+//       options.UseSmallCasePropertiesComparison = true;
+// }).ReadAllLines();
 
-var result2 = new CsvParser<DTO>(file, options =>
-{
-      options.ColumnDelimiterChar = ',';
-}).OverrideColumnsConfiguration((config) =>
-{
-      config.Add(x => nameof(x.Id), "id", "System.Int32");
-      config.Add(x => nameof(x.Country), "country", "System.String");
-})
-.ReadAllLines();
+// //CASE 02 - Custom column configurator from the file with readall lines method
+// var result2 = new CsvParser<DTO>(path, options =>
+// {
+//       options.ColumnDelimiterChar = ',';
+// }).OverrideColumnsConfiguration((config) =>
+// {
+//       config.Add(x => nameof(x.Id), "id", "System.Int32");
+//       config.Add(x => nameof(x.Country), "country", "System.String");
+// })
+// .ReadAllLines();
 
 
-if (!result.Success)
-      System.Console.WriteLine("Errors has occured:");
-foreach (string s in result.Errors)
-{
-      System.Console.WriteLine(s);
-}
+// if (!result.Success)
+//       System.Console.WriteLine("Errors has occured:");
+// foreach (string s in result.Errors)
+// {
+//       System.Console.WriteLine(s);
+// }
 
-System.Console.WriteLine("It was successfull");
+// System.Console.WriteLine("It was successfull");
 // var runner = builder.Build();
 
 // runner.Run();
