@@ -32,18 +32,28 @@ string path = @"/home/rborges/tmp/datasets/winemag-data_first150k.csv";
 // })
 // .ReadAllLines();
 
+//CASE 4
 
-// if (!result.Success)
-//       System.Console.WriteLine("Errors has occured:");
-// foreach (string s in result.Errors)
-// {
-//       System.Console.WriteLine(s);
-// }
+var result = CSV.ReadAll<DTO>(path, delimiter: ',', smallCaseCompare: true);
 
-// System.Console.WriteLine("It was successfull");
+if (!result.Success)
+{
+      System.Console.WriteLine("Errors has occured:");
+      foreach (string s in result.Errors)
+      {
+            System.Console.WriteLine(s);
+      }
+}
+
+System.Console.WriteLine("It was successfull");
+
 // var runner = builder.Build();
 
 // runner.Run();
+
+
+
+
 public class DTO
 {
       public string Id { get; set; } = string.Empty;
