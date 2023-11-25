@@ -56,10 +56,9 @@ public static class CSV
                               result.AddError(s);
                         }
                   }
-                  result.Finish(parserResult.GetResult<List<T>>());
+                  result.Finish(parserResult.GetResult().GetData());
 
                   return result;
-
             }
             catch
             {
@@ -156,7 +155,6 @@ public static class CSV
                   }
                   if (i == line.Length - 1)
                   {
-
                         result.Add(Tuple.Create(i, tmp, line.Substring(carriedge, (i - carriedge))));
                   }
             }

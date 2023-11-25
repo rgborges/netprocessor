@@ -12,10 +12,8 @@ public abstract class BaseResult
       private IList<string> _errors;
       private object? _data;
       private ResultStatus _status;
-
       public Result Result { get => _result; }
       public IList<string> Errors { get => _errors; }
-      public object? Data { get => _data; }
       public ResultStatus Status { get => _status; }
       public bool Success
       {
@@ -25,6 +23,7 @@ public abstract class BaseResult
             }
       }
       public long ElapsedTime { get => _stopwatch.ElapsedMilliseconds; }
+      
       public BaseResult()
       {
             _stopwatch = new Stopwatch();
@@ -75,13 +74,13 @@ public abstract class BaseResult
             _errors.Add(error);
             _result = new CreateResult().Failure(_errors.ToArray());
       }
-      public virtual ResultData<T> GetResult<T>()
+      public virtual ResultData GetResult()
       {
             if (_data is null)
             {
                   throw new NullReferenceException(nameof(_data));
             }
-            return new ResultData<T>(_result, (T)_data);
+            return new ResultData(_result, _data);
       }
 }
 

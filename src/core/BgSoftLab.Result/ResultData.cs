@@ -1,19 +1,29 @@
+using System.Collections;
+
 namespace BgSoftLab.Results;
 
-public record class ResultData<T>
+public record class ResultData
 {
-      public Result Result { get; private set; }
-      public T Data {get; private set; }
+      private object _data;
+      private Result _result;
+      public Result Result { get => _result; }
 
-      public ResultData(Result result, T data)
+      public ResultData(Result result, object data)
       {
-            Data = data;
-            Result = result;
+            _data = data;
+            _result = result;
+      }
+      public object GetData()
+      {
+            return _data;
+      }
+      public T GetData<T>()
+      {
+            return (T)_data;
       }
 
-
-      public T GetData()
+      public List<T> GetDataAsList<T>()
       {
-            return Data;
+            return _data as List<T> ?? new List<T>();
       }
 }

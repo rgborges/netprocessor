@@ -256,7 +256,7 @@ public class CsvParser<T> : BaseImporter<T>
                               result.AddError(s);
                         }
                   }
-                  result.Finish(parserResult.GetResult<List<T>>());
+                  result.Finish(parserResult);
                   return result;
             }
             catch

@@ -43,6 +43,9 @@ if (!result.Success)
       {
             System.Console.WriteLine(s);
       }
+      
+      var data = result.GetResult()
+            .GetDataAsList<DTO>();
 }
 
 System.Console.WriteLine("It was successfull");

@@ -9,9 +9,9 @@ var result = Execute();
 
 if (result.Success)
 {
-      System.Console.WriteLine("It was a success");
-      var dataResult = result.GetResult<int[]>().GetData(); 
-      return;
+      // System.Console.WriteLine("It was a success");
+      // var dataResult = result.GetResult<int[]>().GetData(); 
+      // return;
 }
 
 System.Console.WriteLine("It has faild");
