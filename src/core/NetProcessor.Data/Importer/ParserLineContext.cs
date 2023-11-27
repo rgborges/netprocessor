@@ -9,6 +9,8 @@ public class ParserLineContext
       public string[] Content { get; set; }
       public int LineIndex { get; set; }
       public string LineContent { get; set; }
+      public int CurrentIndex { get; internal set; }
+      public FileImporterOptions ImporterOptions { get; set; }
 
 
       /// <summary>

@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -20,6 +20,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BgSoftLab.Extentions", "src\core\BgSoftLab.Extentions\BgSoftLab.Extentions.csproj", "{A2C62325-E3A8-4E9D-A50A-2EC8B19910B3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtentionTests", "tests\ExtentionTests\ExtentionTests.csproj", "{6BEB25CE-BAA7-4B38-8C29-55F898793930}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetProcessorParserTests", "tests\NetProcessorParserTests\NetProcessorParserTests.csproj", "{0683D790-49AF-4EB9-8BD3-1099ECFB054F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,6 +56,10 @@ Global
 		{6BEB25CE-BAA7-4B38-8C29-55F898793930}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6BEB25CE-BAA7-4B38-8C29-55F898793930}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6BEB25CE-BAA7-4B38-8C29-55F898793930}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0683D790-49AF-4EB9-8BD3-1099ECFB054F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0683D790-49AF-4EB9-8BD3-1099ECFB054F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0683D790-49AF-4EB9-8BD3-1099ECFB054F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0683D790-49AF-4EB9-8BD3-1099ECFB054F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{75296A46-6331-4AFD-ABB5-93ECD05D6D5D} = {320C6C35-9F23-4446-B46D-C3B0F6B71B75}
@@ -63,5 +69,6 @@ Global
 		{6D3425D7-DEA9-47FE-ACA8-F1C8DACA3DD8} = {F93A79F1-F0B0-444D-A809-9E56040099F0}
 		{A2C62325-E3A8-4E9D-A50A-2EC8B19910B3} = {75296A46-6331-4AFD-ABB5-93ECD05D6D5D}
 		{6BEB25CE-BAA7-4B38-8C29-55F898793930} = {F93A79F1-F0B0-444D-A809-9E56040099F0}
+		{0683D790-49AF-4EB9-8BD3-1099ECFB054F} = {F93A79F1-F0B0-444D-A809-9E56040099F0}
 	EndGlobalSection
 EndGlobal

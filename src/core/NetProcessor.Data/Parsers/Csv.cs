@@ -6,7 +6,7 @@ namespace NetProcessor.Data;
 
 public static class CSV
 {
-      public static ParserResult ReadAll<T>(string filepath, char delimiter = ',', bool smallCaseCompare = false)
+      public static ParserResult ReadAll<T>(string filepath, char delimiter = ',', bool smallCaseCompare = false, bool strictType = false)
       {
             try
             {
@@ -98,10 +98,13 @@ public static class CSV
                               result.AddError($"The columns idenfied through type mismatch of identified values line {i}");
                               continue;
                         }
+
                         for (int j = 0; j < properties.Length; j++)
                         {
-                              properties[j].SetValue(generic, valueList[j]);
+                              // properties[j].SetValue(generic, valueList[j]);
+                              properties[j].SetValue(generic, TryConvert(valueList[j], properties[j].PropertyType.Name));
                         }
+
                         dataResult.Add(generic);
                   }
                   result.Finish(dataResult);
@@ -110,6 +113,60 @@ public static class CSV
             catch
             {
                   throw;
+            }
+      }
+
+      private static object TryConvert(string s, string propTypeName)
+      {
+            double tmpDouble;
+            int tmpInt;
+            Int16 tmpInt16;
+            Int64 tmpInt64;
+            long tmpLong;
+            bool tmpBool;
+
+            switch (propTypeName)
+            {
+                  case "String":
+                        return s;
+                  case "Double":
+                        if (double.TryParse(s, out tmpDouble))
+                        {
+                              return tmpDouble;
+                        }
+                        return 0;
+                  case "Int16":
+                        if (Int16.TryParse(s, out tmpInt16))
+                        {
+                              return tmpInt16;
+                        }
+                        return s;
+                  case "Int32":
+                        if (Int32.TryParse(s, out tmpInt))
+                        {
+                              return tmpInt;
+                        }
+                        return 0;
+                  case "Int64":
+                        if (Int64.TryParse(s, out tmpInt64))
+                        {
+                              return tmpInt64;
+                        }
+                        return 0;
+                  case "Long":
+                        if (long.TryParse(s, out tmpLong))
+                        {
+                              return tmpLong;
+                        }
+                        return 0;
+                  case "Boolean":
+                        if (bool.TryParse(s, out tmpBool))
+                        {
+                              return tmpBool;
+                        }
+                        return false;
+                  default:
+                        return s;
             }
       }
       private static List<Tuple<int, CsvTokens, string>> LineParserFunction(string line)
@@ -183,7 +240,6 @@ public static class CSV
                   throw;
             }
       }
-
       public class DataResult
       {
             public DataTable ToDataTable()
@@ -202,4 +258,3 @@ public static class CSV
       }
 
 }
-

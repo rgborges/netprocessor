@@ -8,31 +8,32 @@ using NetProcessor.Data.Importer;
 
 namespace NetProcessor.Data;
 
-public class CsvParser<T> : BaseImporter<T>
+public class CsvImporter<T> : BaseImporter<T>
 {
       private readonly FileInfo _fileInfo;
       private bool _useInvarianCulture;
       private readonly FileImporterOptions _fileImportOptions;
       private Func<string[], ParserResult> _lineParserFunc;
+      private Func<ParserLineContext, ParserResult> _convertParserFunction;
       private Dictionary<string, Type> _columnsType;
       private ColumnTypeConfigurator<T> _columnConfigurator;
 
       #region  Properties
+      public bool Read { get; private set; }
       public int CurrentLine { get; private set; }
       #endregion
       #region  Constructors
-      public CsvParser(string filePath, bool useInvarianCulture, ILineParserConverter<string, T> lineParser) : base(lineParser)
+      public CsvImporter(string filePath, bool useInvarianCulture, ILineParserConverter<string, T> lineParser) : base(lineParser)
       {
             if (String.IsNullOrEmpty(filePath))
             {
                   throw new FileNotFoundException(nameof(filePath));
             }
-
             _fileInfo = new FileInfo(filePath);
             _useInvarianCulture = useInvarianCulture;
             _fileImportOptions = new FileImporterOptions();
       }
-      public CsvParser(string fileInfo, Action<FileImporterOptions> configAction, ILineParserConverter<string, T> lineParser) : base(lineParser)
+      public CsvImporter(string fileInfo, Action<FileImporterOptions> configAction, ILineParserConverter<string, T> lineParser) : base(lineParser)
       {
             _fileInfo = new FileInfo(fileInfo);
 
@@ -51,13 +52,13 @@ public class CsvParser<T> : BaseImporter<T>
       /// </summary>
       /// <param name="func"></param>
       /// <returns></returns>
-      public CsvParser<T> OverrideColumnsConfiguration(Action<ColumnTypeConfigurator<T>> action)
+      public CsvImporter<T> OverrideColumnsConfiguration(Action<ColumnTypeConfigurator<T>> action)
       {
             _columnConfigurator = new ColumnTypeConfigurator<T>();
             action(_columnConfigurator);
             return this;
       }
-      public CsvParser<T> SetLineParserFunction(Func<string[], ParserResult> lineFunc)
+      public CsvImporter<T> SetLineParserFunction(Func<string[], ParserResult> lineFunc)
       {
             _lineParserFunc = lineFunc;
             return this;
@@ -128,13 +129,14 @@ public class CsvParser<T> : BaseImporter<T>
                         dataResult.Add(generic);
                   }
                   result.Finish(dataResult);
+
                   return result;
             }
             catch
             {
                   throw;
             }
-      } 
+      }
       private List<Tuple<int, CsvTokens, string>> LineParserFunction(string line)
       {
             var result = new List<Tuple<int, CsvTokens, string>>();
@@ -209,6 +211,7 @@ public class CsvParser<T> : BaseImporter<T>
                         result.FinishWithError(_fileInfo, "The file doesn't exist");
                         return result;
                   }
+
                   var content = File.ReadAllLines(file);
 
                   var fileHeaders = content[0].Split(_fileImportOptions.ColumnDelimiterChar);
@@ -257,12 +260,84 @@ public class CsvParser<T> : BaseImporter<T>
                         }
                   }
                   result.Finish(parserResult);
+
                   return result;
             }
             catch
             {
                   throw;
             }
+      }
+      public ParserResult Run()
+      {
+            try
+            {
+                  var result = new ParserResult();
+                  var entities = new List<T>();
+
+                  if (_fileInfo is null)
+                  {
+                        result.FinishWithError(_fileInfo, "File info was not specified");
+                        return result;
+                  }
+
+                  if (_fileInfo.Extension != ".csv")
+                  {
+                        result.FinishWithError(_fileInfo, "The file extentions is invalid");
+                        return result;
+                  }
+                  string file = _fileInfo?.FullName;
+                  if (!_fileInfo.Exists)
+                  {
+                        result.FinishWithError(_fileInfo, "The file doesn't exist");
+                        return result;
+                  }
+                  
+                  Read = true;
+                  LineContext.Content = File.ReadAllLines(file);
+                  LineContext.ImporterOptions = _fileImportOptions;
+
+                  for (int i = 0; i < LineContext.Content.Length; i++)
+                  {
+                        if (_fileImportOptions.FileHasHeaders)
+                        {
+                              if (i == 0)
+                              {
+                                    continue;
+                              }
+                        }
+
+                        LineContext.LineContent = LinePreprocessor(LineContext.Content[i]);
+                        LineContext.CurrentIndex = i;
+                        ParserResult lineConverResult = _convertParserFunction(LineContext);
+
+                        var entity = lineConverResult.GetResult().GetData();
+
+                        if (lineConverResult.Success)
+                        {
+                              entities.Add((T)entity);
+                              continue;
+                        }
+
+                        foreach (string s in lineConverResult.Errors)
+                        {
+                              result.AddError(s);
+                        }
+                        entities.Add((T)entity);
+                  }
+
+                  result.Finish(entities);
+
+                  return result;
+            }
+            catch
+            {
+                  throw;
+            }
+      }
+      public string LinePreProcessorFunction(string line)
+      {
+            return line;
       }
       #endregion
 }
