@@ -13,7 +13,7 @@ public static class CSV
                   var result = new ParserResult();
 
                   var fileInfo = new FileInfo(filepath);
-
+/// In Linux we don't have the distinction of the file using the format.
                   if (fileInfo.Extension != ".csv")
                   {
                         throw new InvalidDataException("The file is not a csv file.");
@@ -101,7 +101,6 @@ public static class CSV
 
                         for (int j = 0; j < properties.Length; j++)
                         {
-                              // properties[j].SetValue(generic, valueList[j]);
                               properties[j].SetValue(generic, TryConvert(valueList[j], properties[j].PropertyType.Name));
                         }
 
