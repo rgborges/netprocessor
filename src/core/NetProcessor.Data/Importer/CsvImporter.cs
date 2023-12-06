@@ -51,7 +51,7 @@ public class CsvImporter<T> : BaseImporter<T>
       /// original read properties from the type behaivor.
       /// </summary>
       /// <param name="func"></param>
-      /// <returns></returns>
+      /// <returns>This object</returns>
       public CsvImporter<T> OverrideColumnsConfiguration(Action<ColumnTypeConfigurator<T>> action)
       {
             _columnConfigurator = new ColumnTypeConfigurator<T>();
@@ -292,7 +292,7 @@ public class CsvImporter<T> : BaseImporter<T>
                         result.FinishWithError(_fileInfo, "The file doesn't exist");
                         return result;
                   }
-                  
+
                   Read = true;
                   LineContext.Content = File.ReadAllLines(file);
                   LineContext.ImporterOptions = _fileImportOptions;
@@ -309,7 +309,8 @@ public class CsvImporter<T> : BaseImporter<T>
 
                         LineContext.LineContent = LinePreprocessor(LineContext.Content[i]);
                         LineContext.CurrentIndex = i;
-                        ParserResult lineConverResult = _convertParserFunction(LineContext);
+                        
+                        ParserResult lineConverResult = LineParserExecution(LineContext, result);
 
                         var entity = lineConverResult.GetResult().GetData();
 
@@ -334,6 +335,21 @@ public class CsvImporter<T> : BaseImporter<T>
             {
                   throw;
             }
+      }
+      private ParserResult LineParserExecution(ParserLineContext context, ParserResult parserProcessorResult)
+      {
+            var result = _convertParserFunction(context);
+           
+            if (!result.Success)
+            {
+                  foreach (string s in result.Errors)
+                  {
+                        parserProcessorResult.AddError(String.Format("Error: {0} Line: {1}", s, context.LineIndex));
+                  }
+            }
+
+            return parserProcessorResult;
+
       }
       public string LinePreProcessorFunction(string line)
       {

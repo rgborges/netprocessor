@@ -5,13 +5,15 @@ namespace NetProcessor.Data.Parsers;
 /// <summary>
 /// Defines a generic file parser.
 /// </summary>
-public abstract class TextParser<T>
+public abstract class TextParser<T, TEnumTokenType>
 {
       private readonly FileImporterOptions _options;
-
-      public TextParser(FileImporterOptions options)
+      private readonly ITextTokenRule<TEnumTokenType> _tokenRules;
+      public TextParser(ITextTokenRule<TEnumTokenType> tokenRules,
+      FileImporterOptions options)
       {
             _options = options;
+            _tokenRules = tokenRules;
       }
       /// <summary>
       /// This function will executed before executing the line parser.
