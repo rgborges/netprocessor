@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 using NetProcessor.Data.Importer;
 
 namespace NetProcessor.Data.Parsers;
@@ -54,7 +56,78 @@ public abstract class TextParser<T, TEnumTokenType>
             }
             catch
             {
-                  
+
             }
       }
+}
+
+
+public abstract class TextParser
+{
+      public string CurrentLine { get => Context.LineContent; }
+      public int LineIndex { get => Context.CurrentIndex; }
+      public string Path { get; set; } = string.Empty;
+      public ParserLineContext Context { get; set; }
+      public FileImporterOptions FileImporterOptions { get; private set; }
+      public TextParser(TextParserOptions options)
+      {
+            var fileOptions = options.FileOptions;
+            Context = new ParserLineContext();
+      }
+      public virtual void OnLineParsing()
+      {
+
+      }
+      public virtual string LineStringProcessor(string s)
+      {
+            return s;
+      }
+      public virtual ParserResult ParseLine(string line)
+      {
+            
+            throw new NotImplementedException();
+      }
+      public ParserResult ParseFile()
+      {
+            if (String.IsNullOrEmpty(FileImporterOptions.Path))
+            {
+                  throw new FileNotFoundException();
+            }
+
+            if (!Directory.Exists(FileImporterOptions.Path))
+            {
+                  throw new FileNotFoundException();
+            }
+            if (FileImporterOptions.MultipleFiles)
+            {
+                  throw new NotImplementedException("Multiple files is not yet supported on Text Parsers");
+            }
+
+            Path = FileImporterOptions.Path;
+
+            if (Context is null)
+            {
+                  Context = new ParserLineContext();
+            }
+
+            var result = ParserTextLines(File.ReadAllLines(Path));
+
+            return result;
+      }
+      public ParserResult ParserTextLines(string[] lines)
+      {
+            var result = new ParserResult();
+            List<object> _data = new List<object>(lines.Length);
+            result.Start();
+            for (int i = 0; i < lines.Length; i++)
+            {
+                  Context.CurrentIndex = i;
+                  Context.LineContent = LineStringProcessor(lines[i]);
+                  OnLineParsing();
+                  _data.Add(LineStringProcessor(Context.LineContent));
+            }
+            result.Finish();
+            return result;
+      }
+
 }

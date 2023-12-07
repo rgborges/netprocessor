@@ -6,5 +6,7 @@ public class FileImporterOptions
       public bool Filter { get; set; }
       public string FilterExtention { get; set; } = ".csv";
       public bool UseSmallCasePropertiesComparison { get; set; } = false;
-      public bool FileHasHeaders { get; internal set; } = true;
+      public bool FileHasHeaders { get; set; } = true;
+      public bool MultipleFiles { get; set; } = false;
+      public string Path { get; set; } = String.Empty;
 }
