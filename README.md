@@ -2,7 +2,7 @@
 
 **IMPORTANT**: This project has not any functional release yet. The development is a work in progress.
 
-The goal of this library is providing help functions and classes to make file importing and exporting easy, from and to sources and destinations.
+The goal of this library is providing help functions and classes to make file importing and exporting easy.
 
 
 ## Last developments
