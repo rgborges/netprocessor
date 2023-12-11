@@ -48,14 +48,6 @@ parser.AddLineRule<R99>(new LineRule().OfType<R99>().SplitByChar('|'));
 
 var result = parser.ParserTextLines(lines);
 
-try
-{
-      parser.ParseFile();
-}
-catch (Exception exp)
-{
-      System.Console.WriteLine(exp);
-}
 
 public record class R99
 {

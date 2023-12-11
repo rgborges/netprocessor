@@ -6,11 +6,11 @@ namespace NetProcessor.Data;
 
 public static class CSV
 {
-      public static ParserResult ReadAll<T>(string filepath, char delimiter = ',', bool smallCaseCompare = false, bool strictType = false)
+      public static DataProcessingOperation ReadAll<T>(string filepath, char delimiter = ',', bool smallCaseCompare = false, bool strictType = false)
       {
             try
             {
-                  var result = new ParserResult();
+                  var result = new DataProcessingOperation();
 
                   var fileInfo = new FileInfo(filepath);
 /// In Linux we don't have the distinction of the file using the format.
@@ -45,7 +45,7 @@ public static class CSV
                         return result;
                   }
 
-                  ParserResult parserResult;
+                  DataProcessingOperation parserResult;
 
                   parserResult = ParseFromString<T>(ref content, ref fileHeaders);
 
@@ -66,9 +66,9 @@ public static class CSV
             }
 
       }
-      private static ParserResult ParseFromString<T>(ref string[] content, ref string[] columns)
+      private static DataProcessingOperation ParseFromString<T>(ref string[] content, ref string[] columns)
       {
-            var result = new ParserResult();
+            var result = new DataProcessingOperation();
             result.Start();
             var dataResult = new List<T>(content.Length);
             var properties = typeof(T).GetProperties();

@@ -42,7 +42,22 @@ public abstract class BaseResult
             _status = ResultStatus.Finished;
             _result = new CreateResult().Ok();
       }
-
+      public void Stop()
+      {
+            _stopwatch.Stop();
+            _status = ResultStatus.Finished;
+      }
+      public void AddResult(object result)
+      {
+            if (!_errors.Any())
+            {
+                  _result = new CreateResult().Ok();
+                  _data = result;
+                  return;
+            }
+            _data = result;
+            _result = new CreateResult().Failure(_errors.ToArray());
+      }
       public virtual void Finish(object referenceData)
       {
             _stopwatch.Stop();

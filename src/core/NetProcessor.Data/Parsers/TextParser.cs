@@ -60,8 +60,6 @@ public abstract class TextParser<T, TEnumTokenType>
             }
       }
 }
-
-
 public abstract class TextParser
 {
       public string CurrentLine { get => Context.LineContent; }
@@ -71,7 +69,11 @@ public abstract class TextParser
       public FileImporterOptions FileImporterOptions { get; private set; }
       public TextParser(TextParserOptions options)
       {
-            var fileOptions = options.FileOptions;
+            if (options is null)
+            {
+                  throw new NullReferenceException(nameof(options));
+            }
+            FileImporterOptions = options.FileOptions;
             Context = new ParserLineContext();
       }
       public virtual void OnLineParsing()
@@ -82,12 +84,14 @@ public abstract class TextParser
       {
             return s;
       }
-      public virtual ParserResult ParseLine(string line)
+      public virtual DataProcessingOperation ParseLine(string line)
       {
-            
-            throw new NotImplementedException();
+            var result = new DataProcessingOperation();
+            result.Start();
+            result.Finish(line);
+            return result;
       }
-      public ParserResult ParseFile()
+      public DataProcessingOperation ParseFile()
       {
             if (String.IsNullOrEmpty(FileImporterOptions.Path))
             {
@@ -114,18 +118,19 @@ public abstract class TextParser
 
             return result;
       }
-      public ParserResult ParserTextLines(string[] lines)
+      public DataProcessingOperation ParserTextLines(string[] lines)
       {
-            var result = new ParserResult();
-            List<object> _data = new List<object>(lines.Length);
+            var result = new DataProcessingOperation();
+            List<DataProcessingOperation> operations = new List<DataProcessingOperation>(lines.Length);
             result.Start();
             for (int i = 0; i < lines.Length; i++)
             {
                   Context.CurrentIndex = i;
                   Context.LineContent = LineStringProcessor(lines[i]);
                   OnLineParsing();
-                  _data.Add(LineStringProcessor(Context.LineContent));
+                  operations.Add(ParseLine(Context.LineContent));
             }
+
             result.Finish();
             return result;
       }

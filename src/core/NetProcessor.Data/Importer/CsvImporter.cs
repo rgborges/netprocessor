@@ -13,8 +13,8 @@ public class CsvImporter<T> : BaseImporter<T>
       private readonly FileInfo _fileInfo;
       private bool _useInvarianCulture;
       private readonly FileImporterOptions _fileImportOptions;
-      private Func<string[], ParserResult> _lineParserFunc;
-      private Func<ParserLineContext, ParserResult> _convertParserFunction;
+      private Func<string[], DataProcessingOperation> _lineParserFunc;
+      private Func<ParserLineContext, DataProcessingOperation> _convertParserFunction;
       private Dictionary<string, Type> _columnsType;
       private ColumnTypeConfigurator<T> _columnConfigurator;
 
@@ -58,7 +58,7 @@ public class CsvImporter<T> : BaseImporter<T>
             action(_columnConfigurator);
             return this;
       }
-      public CsvImporter<T> SetLineParserFunction(Func<string[], ParserResult> lineFunc)
+      public CsvImporter<T> SetLineParserFunction(Func<string[], DataProcessingOperation> lineFunc)
       {
             _lineParserFunc = lineFunc;
             return this;
@@ -89,9 +89,9 @@ public class CsvImporter<T> : BaseImporter<T>
                   throw;
             }
       }
-      private ParserResult ParseFromString(ref string[] content, ref string[] columns)
+      private DataProcessingOperation ParseFromString(ref string[] content, ref string[] columns)
       {
-            var result = new ParserResult();
+            var result = new DataProcessingOperation();
             result.Start();
             var dataResult = new List<T>(content.Length);
             var properties = typeof(T).GetProperties();
@@ -188,11 +188,11 @@ public class CsvImporter<T> : BaseImporter<T>
       }
       #endregion
       #region ParsingMethods
-      public ParserResult ReadAllLines()
+      public DataProcessingOperation ReadAllLines()
       {
             try
             {
-                  var result = new ParserResult();
+                  var result = new DataProcessingOperation();
 
                   if (_fileInfo is null)
                   {
@@ -234,7 +234,7 @@ public class CsvImporter<T> : BaseImporter<T>
                         return result;
                   }
 
-                  ParserResult parserResult;
+                  DataProcessingOperation parserResult;
 
                   if (_lineParserFunc is not null)
                   {
@@ -268,11 +268,11 @@ public class CsvImporter<T> : BaseImporter<T>
                   throw;
             }
       }
-      public ParserResult Run()
+      public DataProcessingOperation Run()
       {
             try
             {
-                  var result = new ParserResult();
+                  var result = new DataProcessingOperation();
                   var entities = new List<T>();
 
                   if (_fileInfo is null)
@@ -310,7 +310,7 @@ public class CsvImporter<T> : BaseImporter<T>
                         LineContext.LineContent = LinePreprocessor(LineContext.Content[i]);
                         LineContext.CurrentIndex = i;
                         
-                        ParserResult lineConverResult = LineParserExecution(LineContext, result);
+                        DataProcessingOperation lineConverResult = LineParserExecution(LineContext, result);
 
                         var entity = lineConverResult.GetResult().GetData();
 
@@ -336,7 +336,7 @@ public class CsvImporter<T> : BaseImporter<T>
                   throw;
             }
       }
-      private ParserResult LineParserExecution(ParserLineContext context, ParserResult parserProcessorResult)
+      private DataProcessingOperation LineParserExecution(ParserLineContext context, DataProcessingOperation parserProcessorResult)
       {
             var result = _convertParserFunction(context);
            

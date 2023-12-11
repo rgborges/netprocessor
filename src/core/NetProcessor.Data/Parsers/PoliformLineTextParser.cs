@@ -1,4 +1,5 @@
 using NetProcessor.Data.Importer;
+using NetProcessor.Data.Result;
 
 namespace NetProcessor.Data.Parsers;
 
@@ -9,37 +10,42 @@ public class PoliformLineTextParser : TextParser
       {
             _map = new Dictionary<Type, LineRule>();
       }
-      
+
       public void AddLineRule<T>(LineRule rule)
       {
-            //try get the key of the type
-
             var type = typeof(T);
 
             if (!_map.ContainsKey(type))
             {
                   _map.Add(type, rule);
             }
-
             return;
       }
 
-    public override object ParseLine(string line)
-    {
-        var splitChar = base.FileImporterOptions.ColumnDelimiterChar;
-       
-        string[] contents = line.Split('|');
+      public override DataProcessingOperation ParseLine(string line)
+      {
 
-        string typeReference = contents[0];
+            return DataCommandHandler.Run((result) =>
+            {
+                  var splitChar = base.FileImporterOptions.ColumnDelimiterChar;
 
-        if (_map.ContainsKey(Type.GetType(typeReference)))
-        {
-            //TODO: Consider other data structure
-        }
+                  string[] contents = line.Split('|');
 
-        throw new NotImplementedException();
-    }
-    public void Clear()
+                  string typeReference = contents[0].Replace('|', ' ').TrimEnd();
+
+                  if (_map.ContainsKey(Type.GetType(typeReference)))
+                  {
+                        //TODO: Consider other data structure
+
+                        var type = Type.GetType(typeReference);
+
+                        var rule = _map[type];
+
+                        throw new NotImplementedException();
+                  }
+            });
+      }
+      public void Clear()
       {
             _map.Clear();
       }
