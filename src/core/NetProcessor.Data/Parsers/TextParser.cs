@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using NetProcessor.Data.Importer;
+using NetProcessor.Data.Result;
 
 namespace NetProcessor.Data.Parsers;
 
@@ -65,7 +66,7 @@ public abstract class TextParser
       public string CurrentLine { get => Context.LineContent; }
       public int LineIndex { get => Context.CurrentIndex; }
       public string Path { get; set; } = string.Empty;
-      public ParserLineContext Context { get; set; }
+      public Importer.ParserLineContext Context { get; set; }
       public FileImporterOptions FileImporterOptions { get; private set; }
       public TextParser(TextParserOptions options)
       {
@@ -74,7 +75,7 @@ public abstract class TextParser
                   throw new NullReferenceException(nameof(options));
             }
             FileImporterOptions = options.FileOptions;
-            Context = new ParserLineContext();
+        Context = new Importer.ParserLineContext();
       }
       public virtual void OnLineParsing()
       {
@@ -111,7 +112,7 @@ public abstract class TextParser
 
             if (Context is null)
             {
-                  Context = new ParserLineContext();
+            Context = new Importer.ParserLineContext();
             }
 
             var result = ParserTextLines(File.ReadAllLines(Path));
@@ -120,19 +121,26 @@ public abstract class TextParser
       }
       public DataProcessingOperation ParserTextLines(string[] lines)
       {
-            var result = new DataProcessingOperation();
-            List<DataProcessingOperation> operations = new List<DataProcessingOperation>(lines.Length);
-            result.Start();
-            for (int i = 0; i < lines.Length; i++)
+            return DataCommandHandler.Run((result) =>
             {
-                  Context.CurrentIndex = i;
-                  Context.LineContent = LineStringProcessor(lines[i]);
-                  OnLineParsing();
-                  operations.Add(ParseLine(Context.LineContent));
-            }
-
-            result.Finish();
-            return result;
+                  List<DataProcessingOperation> operations = new List<DataProcessingOperation>(lines.Length);
+                  for (int i = 0; i < lines.Length; i++)
+                  {
+                        Context.CurrentIndex = i;
+                        Context.LineContent = LineStringProcessor(lines[i]);
+                        OnLineParsing();
+                        var lineProcessResult = ParseLine(Context.LineContent);
+                        if (!lineProcessResult.Success)
+                        {
+                              foreach (string e in lineProcessResult.Errors)
+                              {
+                                    result.AddError(
+                                          String.Format("On text line {0} Error: {1}\n", Context.CurrentIndex, e)
+                                    );
+                              }
+                        }
+                        operations.Add(lineProcessResult);
+                  }
+            });
       }
-
 }

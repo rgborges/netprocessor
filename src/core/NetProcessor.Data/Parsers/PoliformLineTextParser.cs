@@ -1,3 +1,4 @@
+using System.Reflection.Metadata;
 using NetProcessor.Data.Importer;
 using NetProcessor.Data.Result;
 
@@ -5,15 +6,15 @@ namespace NetProcessor.Data.Parsers;
 
 public class PoliformLineTextParser : TextParser
 {
-      private Dictionary<Type, LineRule> _map;
+      private Dictionary<string, LineRule<CsvTokens>> _map;
       public PoliformLineTextParser(TextParserOptions options) : base(options)
       {
-            _map = new Dictionary<Type, LineRule>();
+            
       }
 
-      public void AddLineRule<T>(LineRule rule)
+      public void AddLineRule<T>(LineRule<CsvTokens> rule)
       {
-            var type = typeof(T);
+            var type = typeof(T).ToString();
 
             if (!_map.ContainsKey(type))
             {
@@ -32,14 +33,10 @@ public class PoliformLineTextParser : TextParser
                   string[] contents = line.Split('|');
 
                   string typeReference = contents[0].Replace('|', ' ').TrimEnd();
-
-                  if (_map.ContainsKey(Type.GetType(typeReference)))
+                  
+                  if (_map.ContainsKey(typeReference))
                   {
-                        //TODO: Consider other data structure
-
-                        var type = Type.GetType(typeReference);
-
-                        var rule = _map[type];
+                        var rule = _map[typeReference];
 
                         throw new NotImplementedException();
                   }

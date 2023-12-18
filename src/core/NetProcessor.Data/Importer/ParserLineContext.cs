@@ -1,3 +1,5 @@
+using NetProcessor.Data.Parsers;
+
 namespace NetProcessor.Data.Importer;
 
 
@@ -10,7 +12,10 @@ public class ParserLineContext
       public int LineIndex { get; set; }
       public string LineContent { get; set; }
       public int CurrentIndex { get; internal set; }
+      public int LastIndex { get; set; }
       public FileImporterOptions ImporterOptions { get; set; }
+      public Dictionary<char, CsvFileTokens> TokenDefinition { get; internal set; }
+      public char Character { get; internal set; }
 
 
       /// <summary>
@@ -44,6 +49,19 @@ public class ParserLineContext
                   throw;
             }
 
+      }
+      public char GetNextChar()
+      {
+            if (CurrentIndex + 1 < LineContent.Length)
+            {
+                  return LineContent[CurrentIndex + 1];
+            }
+            return LineContent[CurrentIndex];
+      }
+      public void Next()
+      {
+            CurrentIndex++;
+            Character = LineContent[CurrentIndex];
       }
 
 }

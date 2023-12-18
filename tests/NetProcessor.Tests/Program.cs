@@ -44,9 +44,58 @@ var parserOption = new TextParserOptions()
 
 var parser = new PoliformLineTextParser(parserOption);
 
-parser.AddLineRule<R99>(new LineRule().OfType<R99>().SplitByChar('|'));
 
-var result = parser.ParserTextLines(lines);
+var r99Rule = new LineRule<CsvFileTokens>(new CsvFileToken())
+                        .OfType<R99>()
+                        .SpecifyRule((context, tsearch) =>
+                        {
+
+                              var rules = context.TokenDefinition;
+
+                              if (rules.ContainsKey(context.GetNextChar()))
+                              {
+                                    char value = context.LineContent[context.CurrentIndex + 1];
+                                    if (rules[value] == CsvFileTokens.SeparateChar)
+                                    {
+                                          tsearch.Value = context.LineContent.Substring(context.LastIndex, context.CurrentIndex);
+                                          tsearch.Token = CsvFileTokens.Content;
+                                          tsearch.Index = context.CurrentIndex;
+                                          context.LastIndex = context.CurrentIndex;
+                                          return;
+                                    }
+                              }
+
+                              if (context.TokenDefinition.ContainsKey(context.Character))
+                              {
+                                    var symbol = context.TokenDefinition[context.Character];
+
+                                    switch (symbol)
+                                    {
+                                          case CsvFileTokens.SeparateChar:
+                                                tsearch.Value = null;
+                                                tsearch.Token = CsvFileTokens.SeparateChar;
+                                                tsearch.Index = context.CurrentIndex;
+                                                break;
+                                    }
+                              }
+
+                        });
+
+try
+{
+      var result = parser.ParserTextLines(lines);
+
+      if (!result.Success)
+      {
+            System.Console.WriteLine(String.Join(' ', result.Errors.ToArray()));
+      }
+}
+catch (Exception exp)
+{
+      System.Console.WriteLine(exp);
+}
+
+
 
 
 public record class R99
