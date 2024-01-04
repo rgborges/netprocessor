@@ -18,7 +18,6 @@ public static class DataCommandHandler
             {
                   result.Stop();
             }
-
             return result;
       }
 }

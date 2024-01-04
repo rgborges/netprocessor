@@ -1,5 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using System.Runtime.CompilerServices;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using NetProcessor.Data;
 using NetProcessor.Data.Importer;
 using NetProcessor.Data.Parsers;
@@ -27,76 +29,16 @@ using NetProcessor.Data.Parsers;
 
 //Test Parser
 
-string[] lines = new[] {
-      "R99|Rafael|26",
-      "R88|245|Whiscousin"
-      };
+const string testCSVTextString = "Nome, Idade\nRafael, 12\n,Gabriela, 49\n";
 
-var parserOption = new TextParserOptions()
+var tokenizerConfig = new CsvTokenizerConfiguration()
 {
-      Strategy = ParserStrategy.Line,
-      FileOptions = new FileImporterOptions()
-      {
-            FileHasHeaders = false,
-            ColumnDelimiterChar = '|'
-      }
+      CsvSpliChar = ','
 };
-
-var parser = new PoliformLineTextParser(parserOption);
-
-
-var r99Rule = new LineRule<CsvFileTokens>(new CsvFileToken())
-                        .OfType<R99>()
-                        .SpecifyRule((context, tsearch) =>
-                        {
-
-                              var rules = context.TokenDefinition;
-
-                              if (rules.ContainsKey(context.GetNextChar()))
-                              {
-                                    char value = context.LineContent[context.CurrentIndex + 1];
-                                    if (rules[value] == CsvFileTokens.SeparateChar)
-                                    {
-                                          tsearch.Value = context.LineContent.Substring(context.LastIndex, context.CurrentIndex);
-                                          tsearch.Token = CsvFileTokens.Content;
-                                          tsearch.Index = context.CurrentIndex;
-                                          context.LastIndex = context.CurrentIndex;
-                                          return;
-                                    }
-                              }
-
-                              if (context.TokenDefinition.ContainsKey(context.Character))
-                              {
-                                    var symbol = context.TokenDefinition[context.Character];
-
-                                    switch (symbol)
-                                    {
-                                          case CsvFileTokens.SeparateChar:
-                                                tsearch.Value = null;
-                                                tsearch.Token = CsvFileTokens.SeparateChar;
-                                                tsearch.Index = context.CurrentIndex;
-                                                break;
-                                    }
-                              }
-
-                        });
-
-try
-{
-      var result = parser.ParserTextLines(lines);
-
-      if (!result.Success)
-      {
-            System.Console.WriteLine(String.Join(' ', result.Errors.ToArray()));
-      }
-}
-catch (Exception exp)
-{
-      System.Console.WriteLine(exp);
-}
-
-
-
+var tokenizer = new CsvTokenizer(tokenizerConfig);
+//Until this funcition all looked fine.
+var tokens = tokenizer.GetTokens(testCSVTextString);
+Console.ReadLine();
 
 public record class R99
 {

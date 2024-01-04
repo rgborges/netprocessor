@@ -83,25 +83,33 @@ public class LineRule<TEnumType>
             {
                   Context = new ParserLineContext();
             }
-            if (_processFunc is null)
+            if (_processAction is null)
             {
                   throw new NullReferenceException("None process function was configured in the object. Please Call SepecfyRule at least once");
             }
 
-            Context.TokenDefinition = new CsvFileToken().GetTokensDefinition();
+            Context.TokenDefinition = new CsvTokenizer().GetTokensDefinition();
 
             Context.LastIndex = 0;
 
             for (int i = 0; i < LineContent.Length; i++)
             {
-                  result.Add(DataCommandHandler.Run((result) =>
+                  var charResult = DataCommandHandler.Run((result) =>
                   {
                         Context.CurrentIndex = i;
+                        Context.LineContent = LineContent;
                         Context.Character = LineContent[i];
                         var tsearch = new TokenSearchRecord();
                         _processAction(this.Context, tsearch);
                         result.Finish(tsearch);
-                  }));
+                  });
+
+                  var data = charResult.GetResult().GetData<TokenSearchRecord>();
+
+                  if (data.Token is not null)
+                  {
+                        result.Add(charResult);
+                  }
 
                   Context.Next();
             }

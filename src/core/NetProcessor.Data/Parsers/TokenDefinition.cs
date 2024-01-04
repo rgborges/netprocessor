@@ -4,7 +4,10 @@ public class TokenDefinition<TEnumType>
 {
       private Dictionary<char, TEnumType> _tokens;
       public Dictionary<char, TEnumType> TokensDefinition { get => _tokens; }
-
+      public TokenDefinition()
+      {
+            _tokens = new Dictionary<char, TEnumType>();
+      }
       public void AddDefinition(char symbol, TEnumType t)
       {
             _tokens.Add(symbol, t);
