@@ -61,14 +61,17 @@ public abstract class TextParser<T, TEnumTokenType>
             }
       }
 }
-public abstract class TextParser
+/// <summary>
+///Defines a base text file importer which context line by line 
+/// </summary>
+public abstract class TextImporter
 {
       public string CurrentLine { get => Context.LineContent; }
       public int LineIndex { get => Context.CurrentIndex; }
       public string Path { get; set; } = string.Empty;
       public Importer.ParserLineContext Context { get; set; }
       public FileImporterOptions FileImporterOptions { get; private set; }
-      public TextParser(TextParserOptions options)
+      public TextImporter(TextParserOptions options)
       {
             if (options is null)
             {

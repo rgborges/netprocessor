@@ -36,6 +36,10 @@ Configurations:
   - Merging all files into one (same structure)
 
 
+### Importers 
+**Purpose**: Import a source file of a specified type into a target (file, database, api). Importers need to be reliable, and error resistent. Which means that the process can't stop on an Exception. For that, the scope need to be treated line by line.
+
+
 
 #### CsvImporter
 
@@ -44,3 +48,6 @@ The CsvImporter will be able to define the file caratcteristics and how it will 
 #### CSV Static Class
 
 Permit parse any csv file into a `ParserResult` with data as a List of type T.
+
+#### Parsers
+Parsers intend to convert text and parse it into a List of objects of type `T`. Parsers don't need to verify errors along the way, the same way of importers. Actually only importers need to track errors line by line, because it needs to be a realible process.

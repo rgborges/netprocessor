@@ -37,7 +37,9 @@ var tokenizerConfig = new CsvTokenizerConfiguration()
 };
 var tokenizer = new CsvTokenizer(tokenizerConfig);
 //Until this funcition all looked fine.
-var tokens = tokenizer.GetTokens(testCSVTextString);
+var tokensResult = tokenizer.GetTokens(testCSVTextString)
+                            .Where(x => (CsvFileTokens)x.Token == CsvFileTokens.Content)
+                            .ToList();
 Console.ReadLine();
 
 public record class R99
