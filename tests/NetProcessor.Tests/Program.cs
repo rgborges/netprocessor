@@ -33,7 +33,7 @@ const string testCSVTextString = "Nome, Idade\nRafael, 12\n,Gabriela, 49\n";
 
 var tokenizerConfig = new CsvTokenizerConfiguration()
 {
-      CsvSpliChar = ','
+      CsvSplitChar = ','
 };
 var tokenizer = new CsvTokenizer(tokenizerConfig);
 //Until this funcition all looked fine.

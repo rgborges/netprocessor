@@ -19,7 +19,7 @@ public abstract class TextParser<T, TEnumTokenType>
             _tokenRules = tokenRules;
       }
       /// <summary>
-      /// This function will executed before executing the line parser.
+      /// This function will execute before executing the line parser.
       /// </summary>
       public virtual void SetLinePreProcessorFunction()
       {
@@ -40,7 +40,7 @@ public abstract class TextParser<T, TEnumTokenType>
 
       }
       /// <summary>
-      /// This post processos is executed after data Token Identification.
+      /// This post process is executed after data Token Identification.
       /// </summary>
       public virtual void SetPostProcessor()
       {

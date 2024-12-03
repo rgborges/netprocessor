@@ -114,7 +114,6 @@ public static class CSV
                   throw;
             }
       }
-
       private static object TryConvert(string s, string propTypeName)
       {
             double tmpDouble;

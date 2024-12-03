@@ -83,7 +83,6 @@ public abstract class BaseResult
       }
       public virtual void FinishWithError(object referenceData, string error)
       {
-            var resultCreation = new CreateResult();
             _stopwatch.Stop();
             _data = referenceData;
             _errors.Add(error);

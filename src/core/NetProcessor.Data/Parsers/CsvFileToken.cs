@@ -2,9 +2,7 @@ namespace NetProcessor.Data.Parsers;
 
 public class CsvTokenizer : ITextTokenRule<CsvFileTokens>, IToken
 {
-
       private TokenDefinition<CsvFileTokens> _definitions;
-
       public CsvTokenizer(CsvTokenizerConfiguration config = null)
       {
             this._definitions = new TokenDefinition<CsvFileTokens>();
@@ -14,14 +12,13 @@ public class CsvTokenizer : ITextTokenRule<CsvFileTokens>, IToken
             {
                   config = new CsvTokenizerConfiguration();
             }
-            _definitions.AddDefinition(config.CsvSpliChar, CsvFileTokens.SeparateChar);
+            _definitions.AddDefinition(config.CsvSplitChar, CsvFileTokens.SeparateChar);
 
       }
       public Dictionary<char, CsvFileTokens> GetTokensDefinition()
       {
             return _definitions.TokensDefinition;
       }
-
       public TokenSearchRecord[] GetTokens(string sentence)
       {
             var tokenSearchList = new List<TokenSearchRecord>();
@@ -80,7 +77,7 @@ public class CsvTokenizer : ITextTokenRule<CsvFileTokens>, IToken
 }
 public class CsvTokenizerConfiguration
 {
-      public char CsvSpliChar { get; set; } = ',';
+      public char CsvSplitChar { get; set; } = ',';
       public bool HasHeders { get; set; } = true;
 }
 
