@@ -69,6 +69,12 @@ public class DataFrame : IDisposable
                   return this.Data[columnName];
             }
       }
+      public DataFrame(int rows, int columns)
+      {
+            _rowCount = rows;
+            _columnCount = columns;
+            Data = new Dictionary<string, object[]>();
+      }
       public DataFrame(string title, object[] values)
       {
             Data = new Dictionary<string, object[]>() {
@@ -123,5 +129,51 @@ public class DataFrame : IDisposable
       {
             // TODO release managed resources here
             this.Data.Clear();
+      }
+      public static DataFrame FromCSV(string path, bool header = true, string[] columns = null)
+      {
+            //TODO: Implement CSV reader
+            int rowCount = 0, columnCount = 0;
+
+            var fileInfo = new FileInfo(path);
+
+            if (!fileInfo.Exists)
+            {
+                  throw new FileNotFoundException("File not found.");
+            }
+            var lines = File.ReadAllLines(path);      
+
+            if (header)
+            {
+                  columns = lines[0].Split(',');
+                  columnCount = columns.Length;
+            }
+
+            rowCount = lines.Length - 1;
+
+            string[,] data = new string[rowCount, columnCount];
+            // make a function to parse the string data splited by ',' to data multidimensional array
+            for (int i = 0; i < rowCount; i++)
+            {
+                  var line = lines[i].Split(',');
+                  for (int j = 0; j < columnCount; j++)
+                  {
+                        data[i, j] = line[j];
+                  }
+            }
+            
+            var result = new DataFrame(rowCount, columnCount);
+
+            for (int i = 0; i < columnCount; i++)
+            {
+                  var rowData = new object[rowCount];
+                  for (int j = 1; j < rowCount; j++)
+                  {
+                        rowData[j] = data[j, i];
+                  }
+                  result.AddColumn(columns[i], rowData);
+            }
+
+            return result;
       }
 }

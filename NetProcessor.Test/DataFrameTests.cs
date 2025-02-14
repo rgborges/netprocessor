@@ -75,4 +75,25 @@ public class DataFrameTests
 
         var values = dfAges.GetValues();
     }
+
+    [Fact]
+    public void Import_From_CSV()
+    {
+        var df = DataFrame.FromCSV("C:\\Workspace\\Data\\Admission_Predict_Ver1.1.csv");
+
+        Assert.NotNull(df);
+    }
+
+
+    [Fact]
+    public void Dummy()
+    {
+        var arr = Enumerable.Range(0, 100).ToArray();
+
+        var partArr = arr[1..3];
+        var partArr2 = arr[1..];
+
+        Assert.NotNull(partArr);
+    }
+    
 }
