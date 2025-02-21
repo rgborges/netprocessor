@@ -69,11 +69,14 @@ public class DataFrame : IDisposable
                   return this.Data[columnName];
             }
       }
-      public DataFrame(int rows, int columns)
+      public DataFrame(int rows, 
+      int columns,
+      Dictionary<string, object[]> data )
       {
             _rowCount = rows;
             _columnCount = columns;
-            Data = new Dictionary<string, object[]>();
+
+            Data = data;
       }
       public DataFrame(string title, object[] values)
       {
@@ -85,6 +88,12 @@ public class DataFrame : IDisposable
             _columnNames.Add(title);
             _rowCount = values.Length;
       }
+      /// <summary>
+      /// Add a new column to the dataframe.
+      /// </summary>
+      /// <param name="title"></param>
+      /// <param name="values"></param>
+      /// <returns></returns>
       public DataFrame AddColumn(string title, object[] values)
       {
             if (values.Length != _rowCount)
@@ -127,7 +136,6 @@ public class DataFrame : IDisposable
       }
       public void Dispose()
       {
-            // TODO release managed resources here
             this.Data.Clear();
       }
       public static DataFrame FromCSV(string path, bool header = true, string[] columns = null)
@@ -153,27 +161,28 @@ public class DataFrame : IDisposable
 
             string[,] data = new string[rowCount, columnCount];
             // make a function to parse the string data splited by ',' to data multidimensional array
-            for (int i = 0; i < rowCount; i++)
+            for (int i = 1; i <= rowCount; i++)
             {
+                  //skip header values
                   var line = lines[i].Split(',');
                   for (int j = 0; j < columnCount; j++)
                   {
-                        data[i, j] = line[j];
+                        data[i - 1, j] = line[j];
                   }
             }
             
-            var result = new DataFrame(rowCount, columnCount);
+            var resultData = new Dictionary<string, object[]>();
 
             for (int i = 0; i < columnCount; i++)
             {
                   var rowData = new object[rowCount];
-                  for (int j = 1; j < rowCount; j++)
+                  for (int j = 0; j < rowCount; j++)
                   {
                         rowData[j] = data[j, i];
                   }
-                  result.AddColumn(columns[i], rowData);
+                  resultData.Add(columns[i], rowData);
             }
 
-            return result;
+            return  new DataFrame(rowCount, columnCount, resultData);
       }
 }

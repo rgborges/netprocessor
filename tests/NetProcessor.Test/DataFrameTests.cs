@@ -79,8 +79,11 @@ public class DataFrameTests
     [Fact]
     public void Import_From_CSV()
     {
-        var df = DataFrame.FromCSV("C:\\Workspace\\Data\\Admission_Predict_Ver1.1.csv");
+        string path = Environment.CurrentDirectory;
 
+        var df = DataFrame.FromCSV("..\\..\\..\\..\\Data\\Admission_Predict_Ver1.1.csv");
+        
+        Assert.Equal(df.Rows, 500);
         Assert.NotNull(df);
     }
 
