@@ -10,6 +10,10 @@ namespace NetProcessor.Data.DataFrame;
 // data["Name"].Top(10);
 // data["Name"].Apply( x => Hash(x)); 
 
+/// <summary>
+/// This dataframe object does not support other types than objects. The support of other steps will be implemented in the future.
+/// </summary>
+
 
 public class DataFrame : IDisposable
 {
@@ -134,10 +138,40 @@ public class DataFrame : IDisposable
             }
             return rows;
       }
+      public Dictionary<string, object[]> GetColumn(string columnName)
+      {
+            return new Dictionary<string, object[]> { { columnName, Data[columnName] } };
+      }
+      public Dictionary<string, object[]> GetColumns(params string[] columnNames)
+      {
+            var result = new Dictionary<string, object[]>();
+
+            foreach (var columnName in columnNames)
+            {
+                  if (Data.ContainsKey(columnName))
+                  {
+                        result.Add(columnName, Data[columnName]);
+                  }
+                  else
+                  {
+                        throw new ArgumentException($"Column '{columnName}' does not exist in the DataFrame.");
+                  }
+            }
+
+            return result;
+      }
       public void Dispose()
       {
             this.Data.Clear();
       }
+      /// <summary>
+      /// Generates a DataFrame from a CSV file.
+      /// </summary>
+      /// <param name="path">The file path</param>
+      /// <param name="header">If use headers or not. the dafault option is true</param>
+      /// <param name="columns">Override the columns name</param>
+      /// <returns></returns>
+      /// <exception cref="FileNotFoundException"></exception> <summary>
       public static DataFrame FromCSV(string path, bool header = true, string[] columns = null)
       {
             //TODO: Implement CSV reader
@@ -185,4 +219,6 @@ public class DataFrame : IDisposable
 
             return  new DataFrame(rowCount, columnCount, resultData);
       }
+
+      
 }

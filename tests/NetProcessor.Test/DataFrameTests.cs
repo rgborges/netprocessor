@@ -43,7 +43,7 @@ public class DataFrameTests
         var df = new DataFrame("names", ["John Doe", "Maria", "Stella"])
             .AddColumn("ages", [12, 23, 15]);
 
-        var rows = df.GetRows(0, 1);
+        var rows = df.GetRows(0, 1).ToArray();
         
         Assert.NotNull(rows);
     }
@@ -85,6 +85,38 @@ public class DataFrameTests
         
         Assert.Equal(df.Rows, 500);
         Assert.NotNull(df);
+    }
+
+    [Fact]
+    public void DataFrame_Top()
+    {
+        var df = new DataFrame("names", ["John Doe", "Maria", "Stella"])
+            .AddColumn("ages", [12, 23, 15]);
+
+        var top = df.Top(1).ToArray();
+        
+        Assert.NotNull(top);
+    }
+
+    [Fact]
+    public void DataFrame_Filters()
+    {
+        //TODO: Implment filter function
+
+        //df_filtered = df.filter(df['age'] > 21)
+
+        
+    }
+
+    [Fact]
+    public void DataFrame_GetColumns()
+    {
+        var df = new DataFrame("names", ["John Doe", "Maria", "Stella"])
+            .AddColumn("ages", [12, 23, 15]);
+
+        var columns = df.GetColumns(new [] { "ages" });
+        
+        Assert.NotNull(columns);
     }
 
 
