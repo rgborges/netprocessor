@@ -138,10 +138,6 @@ public class DataFrame : IDisposable
             }
             return rows;
       }
-      public Dictionary<string, object[]> GetColumn(string columnName)
-      {
-            return new Dictionary<string, object[]> { { columnName, Data[columnName] } };
-      }
       public Dictionary<string, object[]> GetColumns(params string[] columnNames)
       {
             var result = new Dictionary<string, object[]>();
@@ -160,6 +156,28 @@ public class DataFrame : IDisposable
 
             return result;
       }
+      /// <summary>
+      ///Remove a column from the dataframe. 
+      /// </summary>
+      /// <param name="columnName"></param>
+      public void RemoveColumn(string columnName)
+      {
+            if (Data.ContainsKey(columnName))
+            {
+                  Data.Remove(columnName);
+                  _columnNames.Remove(columnName);
+                  _columnCount--;
+            }
+            else
+            {
+                  throw new ArgumentException($"Column '{columnName}' does not exist in the DataFrame.");
+            }
+      }
+
+      public DataFrame Filter(Dictionary<string, object[]> column, Predicate<object> expressions)
+      {
+            throw new NotImplementedException($"Filter method {nameof(Filter)} is not implemented yet.");
+      }    
       public void Dispose()
       {
             this.Data.Clear();
@@ -219,6 +237,4 @@ public class DataFrame : IDisposable
 
             return  new DataFrame(rowCount, columnCount, resultData);
       }
-
-      
 }

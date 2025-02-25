@@ -83,7 +83,7 @@ public class DataFrameTests
 
         var df = DataFrame.FromCSV("..\\..\\..\\..\\Data\\Admission_Predict_Ver1.1.csv");
         
-        Assert.Equal(df.Rows, 500);
+        Assert.Equal(500,df.Rows);
         Assert.NotNull(df);
     }
 
