@@ -190,7 +190,7 @@ public class DataFrame : IDisposable
       /// <param name="columns">Override the columns name</param>
       /// <returns></returns>
       /// <exception cref="FileNotFoundException"></exception> <summary>
-      public static DataFrame FromCSV(string path, bool header = true, string[] columns = null)
+      public static DataFrame FromCSV(string path, bool header = true, char delimiter = ',', string[] columns = null)
       {
             //TODO: Implement CSV reader
             int rowCount = 0, columnCount = 0;
@@ -205,7 +205,7 @@ public class DataFrame : IDisposable
 
             if (header)
             {
-                  columns = lines[0].Split(',');
+                  columns = lines[0].Split(delimiter);
                   columnCount = columns.Length;
             }
 
