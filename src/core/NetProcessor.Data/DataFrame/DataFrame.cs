@@ -73,9 +73,9 @@ public class DataFrame : IDisposable
                   return this.Data[columnName];
             }
       }
-      public DataFrame(int rows, 
+      public DataFrame(int rows,
       int columns,
-      Dictionary<string, object[]> data )
+      Dictionary<string, object[]> data)
       {
             _rowCount = rows;
             _columnCount = columns;
@@ -174,10 +174,33 @@ public class DataFrame : IDisposable
             }
       }
 
-      public DataFrame Filter(Dictionary<string, object[]> column, Predicate<object> expressions)
+      public DataFrame Filter(string columnName, Predicate<object> predicate)
       {
-            throw new NotImplementedException($"Filter method {nameof(Filter)} is not implemented yet.");
-      }    
+            if (!Data.ContainsKey(columnName))
+            {
+                  throw new ArgumentException($"Column '{columnName}' does not exist in the DataFrame.");
+            }
+
+            var filteredData = new Dictionary<string, List<object>>();
+            foreach (var column in _columnNames)
+            {
+                  filteredData[column] = new List<object>();
+            }
+
+            for (int i = 0; i < _rowCount; i++)
+            {
+                  if (predicate(Data[columnName][i]))
+                  {
+                        foreach (var column in _columnNames)
+                        {
+                              filteredData[column].Add(Data[column][i]);
+                        }
+                  }
+            }
+
+            var resultData = filteredData.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.ToArray());
+            return new DataFrame(resultData.First().Value.Length, _columnCount, resultData);
+      }
       public void Dispose()
       {
             this.Data.Clear();
@@ -201,7 +224,7 @@ public class DataFrame : IDisposable
             {
                   throw new FileNotFoundException("File not found.");
             }
-            var lines = File.ReadAllLines(path);      
+            var lines = File.ReadAllLines(path);
 
             if (header)
             {
@@ -222,7 +245,7 @@ public class DataFrame : IDisposable
                         data[i - 1, j] = line[j];
                   }
             }
-            
+
             var resultData = new Dictionary<string, object[]>();
 
             for (int i = 0; i < columnCount; i++)
@@ -235,6 +258,6 @@ public class DataFrame : IDisposable
                   resultData.Add(columns[i], rowData);
             }
 
-            return  new DataFrame(rowCount, columnCount, resultData);
+            return new DataFrame(rowCount, columnCount, resultData);
       }
 }

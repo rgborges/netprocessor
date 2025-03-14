@@ -12,7 +12,7 @@ public class DataFrameTests
                         .AddColumn("ages", [12, 23, 15]);
 
         var ages = df.Data["ages"];
-        
+
         Assert.NotNull(ages);
         Assert.Equal(3, ages.Length);
     }
@@ -22,8 +22,8 @@ public class DataFrameTests
     {
         var df = new DataFrame("names", ["John Doe", "Maria", "Stella"])
             .AddColumn("ages", [12, 23, 15]);
-        
-        Assert.Equal((3,2), df.Shape);
+
+        Assert.Equal((3, 2), df.Shape);
     }
 
     [Fact]
@@ -31,9 +31,9 @@ public class DataFrameTests
     {
         var df = new DataFrame("names", ["John Doe", "Maria", "Stella"])
             .AddColumn("ages", [12, 23, 15]);
-        
+
         var jhon = df[0];
-        
+
         Assert.NotNull(jhon);
     }
 
@@ -44,7 +44,7 @@ public class DataFrameTests
             .AddColumn("ages", [12, 23, 15]);
 
         var rows = df.GetRows(0, 1).ToArray();
-        
+
         Assert.NotNull(rows);
     }
 
@@ -54,22 +54,22 @@ public class DataFrameTests
         using (var df = new DataFrame("names", ["John Doe", "Maria", "Stella"])
                             .AddColumn("ages", [12, 23, 15]))
         {
-            
+
         }
     }
 
     [Fact]
     public void DataFrame_Column()
     {
-        var dfColumn = new DataFrameColumn("city", new [] { "São Paulo", "Rio de Janeiro", "Bahia" });
+        var dfColumn = new DataFrameColumn("city", new[] { "São Paulo", "Rio de Janeiro", "Bahia" });
 
         Assert.Equal("city", dfColumn.Name);
 
-        var dfAges = new DataFrameColumn("ages", [ 12, 15, 26, 24 ]);
+        var dfAges = new DataFrameColumn("ages", [12, 15, 26, 24]);
 
         Assert.Equal(4, dfAges.Size);
 
-        dfAges.Apply<Int32>((int input) => 
+        dfAges.Apply<Int32>((int input) =>
             input = input + 2
         );
 
@@ -82,8 +82,8 @@ public class DataFrameTests
         string path = Environment.CurrentDirectory;
 
         var df = DataFrame.FromCSV("..\\..\\..\\..\\Data\\Admission_Predict_Ver1.1.csv");
-        
-        Assert.Equal(500,df.Rows);
+
+        Assert.Equal(500, df.Rows);
         Assert.NotNull(df);
     }
 
@@ -94,7 +94,7 @@ public class DataFrameTests
             .AddColumn("ages", [12, 23, 15]);
 
         var top = df.Top(1).ToArray();
-        
+
         Assert.NotNull(top);
     }
 
@@ -104,8 +104,13 @@ public class DataFrameTests
         //TODO: Implment filter function
 
         //df_filtered = df.filter(df['age'] > 21)
+        var df = new DataFrame("names", ["John Doe", "Maria", "Stella"])
+                   .AddColumn("ages", [12, 23, 15]);
 
+        var dfFiltered = df.Filter("ages", (object age) => (int)age > 21);
         
+        Assert.Equal(1, dfFiltered.Rows);
+
     }
 
     [Fact]
@@ -114,8 +119,8 @@ public class DataFrameTests
         var df = new DataFrame("names", ["John Doe", "Maria", "Stella"])
             .AddColumn("ages", [12, 23, 15]);
 
-        var columns = df.GetColumns(new [] { "ages" });
-        
+        var columns = df.GetColumns(new[] { "ages" });
+
         Assert.NotNull(columns);
     }
 
@@ -130,5 +135,5 @@ public class DataFrameTests
 
         Assert.NotNull(partArr);
     }
-    
+
 }
