@@ -88,6 +88,16 @@ public class DataFrameTests
     }
 
     [Fact]
+    public void Import_From_CSV_UsedCarsDataSet()
+    {
+        string path = Environment.CurrentDirectory;
+
+        var df = DataFrame.FromCSV("..\\..\\..\\..\\Data\\uae_used_cars_10k.csv");
+
+        Assert.Equal(10_000, df.Rows);
+        Assert.NotNull(df);
+    }
+    [Fact]
     public void DataFrame_Top()
     {
         var df = new DataFrame("names", ["John Doe", "Maria", "Stella"])
