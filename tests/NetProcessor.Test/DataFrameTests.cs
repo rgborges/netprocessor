@@ -1,6 +1,7 @@
 using NetProcessor.Data.DataFrame;
 
 namespace NetProcessor.Test;
+
 using NetProcessor.Data;
 
 public class DataFrameTests
@@ -97,6 +98,19 @@ public class DataFrameTests
         Assert.Equal(10_000, df.Rows);
         Assert.NotNull(df);
     }
+
+    [Fact]
+    public void DataFrame_2GB_LoadTest()
+    {
+        //System Out of memory excetion
+        string path = "C:\\tmp\\tests\\archive\\ratings.csv";
+
+        foreach (var df in DataFrame.FromCSVInChunks(path, chunkSize: 1_000_000))
+        {
+            Assert.NotNull(df);
+        }
+    }
+
     [Fact]
     public void DataFrame_Top()
     {
@@ -118,7 +132,7 @@ public class DataFrameTests
                    .AddColumn("ages", [12, 23, 15]);
 
         var dfFiltered = df.Filter("ages", (object age) => (int)age > 21);
-        
+
         Assert.Equal(1, dfFiltered.Rows);
 
     }

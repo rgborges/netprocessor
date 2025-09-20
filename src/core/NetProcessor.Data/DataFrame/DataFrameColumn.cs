@@ -53,7 +53,6 @@ public class DataFrameColumn
       {
             return _data.Value;
       }
-    
 
       public DataFrameColumn Apply<T>(Func<T, T> expression)
       {
