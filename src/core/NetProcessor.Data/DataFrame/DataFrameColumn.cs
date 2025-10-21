@@ -48,13 +48,20 @@ public class DataFrameColumn
       {
             get { return _data; }
       }
-
       public object[] GetValues()
       {
             return _data.Value;
       }
-    
-
+      public T[] GetValues<T>(IDataFrameColumnConverter<T> converter)
+      {
+            var vector = _data.Value;
+            T[] result = new T[vector.Length];
+            for (int i = 0; i < vector.Length; i++)
+            {
+                  result[i] = converter.ConvertFromObject(vector[i]);
+            }
+            return result;
+      }
       public DataFrameColumn Apply<T>(Func<T, T> expression)
       {
             var vector = Data.Value;
@@ -63,7 +70,28 @@ public class DataFrameColumn
                   vector[i] = expression((T)vector[i]);
             }
             _data = new KeyValuePair<string, object[]>(Name, vector);
-            
+
             return this;
       }
+      
+      public DataFrameColumn Apply<T>(Func<T, T> expression, Predicate<T> predicate)
+      {
+            var vector = Data.Value;
+            for (int i = 0; i < vector.Length; i++)
+            {
+                  var v = (T)vector[i];
+                  if (predicate(v))
+                  {
+                        vector[i] = expression(v);
+                  }
+            }
+            _data = new KeyValuePair<string, object[]>(Name, vector);
+
+            return this;
+      }
+}
+
+public interface IDataFrameColumnConverter<T>
+{
+    T ConvertFromObject(object v);
 }

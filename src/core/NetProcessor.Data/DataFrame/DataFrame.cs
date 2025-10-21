@@ -63,9 +63,20 @@ public class DataFrame : IDisposable
             }
       }
       /// <summary>
+      /// The number of the current page
+      /// </summary>
+      public int Page { get; private set; }
+      /// <summary>
+      /// Total page size
+      /// </summary>
+      public int PageSize { get; private set; }
+      /// <summary>
       /// Return the values of the given column.
       /// </summary>
       /// <param name="columnName"></param>
+      ///
+      public int NumberOfPages { get; private set; }
+
       public object this[string columnName]
       {
             get
@@ -73,15 +84,41 @@ public class DataFrame : IDisposable
                   return this.Data[columnName];
             }
       }
-      public DataFrame(int rows,
-      int columns,
-      Dictionary<string, object[]> data)
+
+      public DataFrame(int rows, int columns, Dictionary<string, object[]> data)
       {
             _rowCount = rows;
             _columnCount = columns;
+            Page = 1;
+            NumberOfPages = 1;
+            PageSize = rows;
+            Data = data;
+      }
+
+      public List<(int, int)> Pages { get; set; }
+
+      public DataFrame(int rows, int columns, string[] columnNames, Dictionary<string, object[]> data, int pageSize)
+      {
+            _rowCount = rows;
+            _columnCount = columns;
+            Page = 1;
+            PageSize = pageSize;
+            Pages = new List<(int, int)>();
+
+            NumberOfPages = (int)Math.Ceiling((double)rows / pageSize);
+
+            int cursor = 0;
+            for (int page = 0; page < NumberOfPages; page++)
+            {
+                  int start = cursor;
+                  int end = Math.Min(cursor + pageSize - 1, rows - 1);
+                  Pages.Add((start, end));
+                  cursor += pageSize;
+            }
 
             Data = data;
       }
+
       public DataFrame(string title, object[] values)
       {
             Data = new Dictionary<string, object[]>() {
@@ -109,7 +146,6 @@ public class DataFrame : IDisposable
             _columnCount++;
             return this;
       }
-
       public IEnumerable<object> Top(int numItems)
       {
             if (numItems >= _rowCount)
@@ -205,17 +241,19 @@ public class DataFrame : IDisposable
       {
             this.Data.Clear();
       }
+
       /// <summary>
       /// Generates a DataFrame from a CSV file.
       /// </summary>
       /// <param name="path">The file path</param>
-      /// <param name="header">If use headers or not. the dafault option is true</param>
+      /// <param name="header">If the use headers or not. the dafault option is true</param>
       /// <param name="columns">Override the columns name</param>
-      /// <returns></returns>
+      /// <returns>Returns a dataframe</returns>
       /// <exception cref="FileNotFoundException"></exception> <summary>
       public static DataFrame FromCSV(string path, bool header = true, char delimiter = ',', string[] columns = null)
       {
             //TODO: Implement CSV reader
+
             int rowCount = 0, columnCount = 0;
 
             var fileInfo = new FileInfo(path);
@@ -224,6 +262,14 @@ public class DataFrame : IDisposable
             {
                   throw new FileNotFoundException("File not found.");
             }
+
+            if (fileInfo.Length > 10 * 1024 * 1024)
+            {
+                  Debug.WriteLine("Warning: The file is larger than 10MB. Consider using a more efficient method for large files.");
+                  throw new NotSupportedException("The file is larger than 10MB. Use the instance format");
+            }
+
+
             var lines = File.ReadAllLines(path);
 
             if (header)
@@ -260,4 +306,65 @@ public class DataFrame : IDisposable
 
             return new DataFrame(rowCount, columnCount, resultData);
       }
+
+      public static IEnumerable<DataFrame> FromCSVInChunks(string path,int chunkSize = 100, bool header = true, char delimiter = ',', string[] columns = null)
+      {
+            int rowCount = 0, columnCount = 0;
+
+            var fileInfo = new FileInfo(path);
+
+            if (!fileInfo.Exists)
+            {
+                  throw new FileNotFoundException("File not found.");
+            }
+
+            if (fileInfo.Length > 10 * 1024 * 1024)
+            {
+                  Debug.WriteLine("Warning: The file is larger than 10MB. Consider using a more efficient method for large files.");
+            }
+
+            bool firstTime = true;
+            foreach (string[] lines in File.ReadLines(fileInfo.FullName).Chunk(chunkSize))
+            {
+                  if (firstTime)
+                  {
+                        if (header)
+                        {
+                              columns = lines[0].Split(delimiter);
+                              columnCount = columns.Length;
+                        }
+                        firstTime = false;
+                  }
+                  rowCount = lines.Length - 1;
+                  string[,] data = new string[rowCount, columnCount];
+                  // make a function to parse the string data splited by ',' to data multidimensional array
+                  for (int i = 1; i <= rowCount; i++)
+                  {
+                        //skip header values
+                        var line = lines[i].Split(',');
+                        for (int j = 0; j < columnCount; j++)
+                        {
+                              data[i - 1, j] = line[j];
+                        }
+                  }
+
+                  var resultData = new Dictionary<string, object[]>();
+
+                  for (int i = 0; i < columnCount; i++)
+                  {
+                        var rowData = new object[rowCount];
+                        for (int j = 0; j < rowCount; j++)
+                        {
+                              rowData[j] = data[j, i];
+                        }
+                        resultData.Add(columns[i], rowData);
+                  }
+
+                  yield return new DataFrame(rowCount, columnCount, resultData);
+            }
+
+      }
+
+
+
 }

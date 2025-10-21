@@ -1,6 +1,7 @@
 using NetProcessor.Data.DataFrame;
 
 namespace NetProcessor.Test;
+
 using NetProcessor.Data;
 
 public class DataFrameTests
@@ -74,14 +75,47 @@ public class DataFrameTests
         );
 
         var values = dfAges.GetValues();
+
+        var mean = dfAges.GetValues().Select(v => Convert.ToInt32(v)).Average();
+
+        Assert.Equal(17, mean);
+
+    }
+    [Fact]
+    public void organize_data_by_category()
+    {
+        var series = new DataFrameColumn("city", new[] { "São Paulo", "Rio de Janeiro", "Bahia", "São Paulo", "Bahia" });
+
+        var g = series.GetValues()
+            .GroupBy(v => v)
+            .Select(g => new { City = g.Key, Count = g.Count() })
+            .OrderByDescending(g => g.Count);
+
+        Assert.NotNull(g);
+    }
+
+    [Fact]
+    public void apply_function_to_column()
+    {
+        var r = new Random();
+
+        var generatedData = Enumerable.Range(0, 10_000).Select(_ => r.Next(1, 100)).Cast<object>().ToArray();
+        
+        var series = new DataFrameColumn("ages", generatedData);
+
+        var peopleGreaterThan50 = series.Apply<int>(v => v + 2, x => x > 50);
+
+        var values = peopleGreaterThan50.GetValues().Select(v => Convert.ToInt32(v)).ToArray();
+
+        Assert.NotNull(values);
     }
 
     [Fact]
     public void Import_From_CSV()
     {
-        string path = Environment.CurrentDirectory;
+        var path = Environment.CurrentDirectory;
 
-        var df = DataFrame.FromCSV("..\\..\\..\\..\\Data\\Admission_Predict_Ver1.1.csv");
+        var df = DataFrame.FromCSV(@"..\..\..\..\Data\Admission_Predict_Ver1.1.csv");
 
         Assert.Equal(500, df.Rows);
         Assert.NotNull(df);
@@ -97,6 +131,19 @@ public class DataFrameTests
         Assert.Equal(10_000, df.Rows);
         Assert.NotNull(df);
     }
+
+    [Fact]
+    public void DataFrame_2GB_LoadTest()
+    {
+        //System Out of memory excetion
+        string path = "C:\\tmp\\tests\\archive\\ratings.csv";
+
+        foreach (var df in DataFrame.FromCSVInChunks(path, chunkSize: 1_000))
+        {
+            Assert.NotNull(df);
+        }
+    }
+
     [Fact]
     public void DataFrame_Top()
     {
@@ -118,7 +165,7 @@ public class DataFrameTests
                    .AddColumn("ages", [12, 23, 15]);
 
         var dfFiltered = df.Filter("ages", (object age) => (int)age > 21);
-        
+
         Assert.Equal(1, dfFiltered.Rows);
 
     }
@@ -135,15 +182,5 @@ public class DataFrameTests
     }
 
 
-    [Fact]
-    public void Dummy()
-    {
-        var arr = Enumerable.Range(0, 100).ToArray();
-
-        var partArr = arr[1..3];
-        var partArr2 = arr[1..];
-
-        Assert.NotNull(partArr);
-    }
 
 }
