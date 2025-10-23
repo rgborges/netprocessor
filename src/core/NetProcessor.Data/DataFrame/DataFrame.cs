@@ -200,17 +200,17 @@ public class DataFrame : IDisposable
 
       public void Apply(string columnName, Func<object, object> func)
       {
+            
             if (!Data.ContainsKey(columnName))
             {
                   throw new ArgumentException($"Column '{columnName}' does not exist in the DataFrame.");
             }
-            
-            var columaData =  Data[columnName];
 
-            for (int i = 0; i < columaData.Length; i++)
+            for (int i = 0; i < Data[columnName].Length; i++)
             {
-                  Data[columnName][i] = func(columaData[i]);
+                  Data[columnName][i] = func(Data[columnName][i]);
             }
+
       }
       /// <summary>
       ///Remove a column from the dataframe. 
@@ -270,7 +270,7 @@ public class DataFrame : IDisposable
       /// <param name="columns">Override the columns name</param>
       /// <returns>Returns a dataframe</returns>
       /// <exception cref="FileNotFoundException"></exception> <summary>
-      public static DataFrame FromCSV(string path, bool header = true, char delimiter = ',', string[] columns = null)
+      public static DataFrame FromCsv(string path, bool header = true, char delimiter = ',', string[] columns = null)
       {
             //TODO: Implement CSV reader
 
@@ -326,7 +326,6 @@ public class DataFrame : IDisposable
             
             return new DataFrame(rowCount, columnCount, resultData, columns);
       }
-
       public static IEnumerable<DataFrame> FromCSVInChunks(string path,int chunkSize = 100, bool header = true, char delimiter = ',', string[] columns = null)
       {
             int rowCount = 0, columnCount = 0;

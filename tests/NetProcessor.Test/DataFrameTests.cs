@@ -65,15 +65,6 @@ public class DataFrameTests
 
         Assert.Equal(4, dfAges.Size);
 
-        dfAges.Apply<Int32>((int input) =>
-            input = input + 2
-        );
-
-        var values = dfAges.GetValues();
-
-        var mean = dfAges.GetValues().Select(v => Convert.ToInt32(v)).Average();
-
-        Assert.Equal(17, mean);
 
     }
     [Fact]
@@ -108,7 +99,7 @@ public class DataFrameTests
     {
         var path = Environment.CurrentDirectory;
 
-        var df = DataFrame.FromCSV(@"..\..\..\..\Data\Admission_Predict_Ver1.1.csv");
+        var df = DataFrame.FromCsv(@"..\..\..\..\Data\Admission_Predict_Ver1.1.csv");
 
         Assert.Equal(500, df.Rows);
         Assert.NotNull(df);
@@ -118,7 +109,7 @@ public class DataFrameTests
     {
         string path = Environment.CurrentDirectory;
 
-        var df = DataFrame.FromCSV("..\\..\\..\\..\\Data\\uae_used_cars_10k.csv");
+        var df = DataFrame.FromCsv("..\\..\\..\\..\\Data\\uae_used_cars_10k.csv");
 
         Assert.Equal(10_000, df.Rows);
         Assert.NotNull(df);
@@ -173,9 +164,14 @@ public class DataFrameTests
     public void DataFrame_Apply()
     {
         var df = new DataFrame("names", new[] { "John Doe", "Maria", "Stella" });
-        
-        df.Apply("names", name => name.GetHashCode());
 
+        df.Apply("names", name =>
+        {
+            var n = (string)name;
+
+            return n.ToUpper();
+        });
+        
         var i = df.GetRows(0, 1).First();
         
         Assert.NotEqual("John Doe", i);

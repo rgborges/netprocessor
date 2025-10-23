@@ -77,6 +77,7 @@ public class DataFrameColumn
       public DataFrameColumn Apply<T>(Func<T, T> expression, Predicate<T> predicate)
       {
             var vector = Data.Value;
+            
             for (int i = 0; i < vector.Length; i++)
             {
                   var v = (T)vector[i];
