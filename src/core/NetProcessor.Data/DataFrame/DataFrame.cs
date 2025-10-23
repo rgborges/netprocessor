@@ -73,7 +73,7 @@ public class DataFrame : IDisposable
       /// <summary>
       /// Return the values of the given column.
       /// </summary>
-      /// <param name="columnName"></param>
+      /// <param name="columnName">The columns name of your dataset</param>
       ///
       public int NumberOfPages { get; private set; }
 
@@ -85,7 +85,7 @@ public class DataFrame : IDisposable
             }
       }
 
-      public DataFrame(int rows, int columns, Dictionary<string, object[]> data)
+      public DataFrame(int rows, int columns, Dictionary<string, object[]> data, string[] columnsName = null)
       {
             _rowCount = rows;
             _columnCount = columns;
@@ -93,6 +93,10 @@ public class DataFrame : IDisposable
             NumberOfPages = 1;
             PageSize = rows;
             Data = data;
+            if (columnsName != null)
+            {
+                  _columnNames = new List<string>(columnsName);      
+            }
       }
 
       public List<(int, int)> Pages { get; set; }
@@ -108,6 +112,7 @@ public class DataFrame : IDisposable
             NumberOfPages = (int)Math.Ceiling((double)rows / pageSize);
 
             int cursor = 0;
+            
             for (int page = 0; page < NumberOfPages; page++)
             {
                   int start = cursor;
@@ -279,13 +284,13 @@ public class DataFrame : IDisposable
             }
 
             rowCount = lines.Length - 1;
-
+            
             string[,] data = new string[rowCount, columnCount];
-            // make a function to parse the string data splited by ',' to data multidimensional array
+
             for (int i = 1; i <= rowCount; i++)
             {
-                  //skip header values
-                  var line = lines[i].Split(',');
+                  var line = lines[i].Split(delimiter);
+                  
                   for (int j = 0; j < columnCount; j++)
                   {
                         data[i - 1, j] = line[j];
@@ -303,6 +308,7 @@ public class DataFrame : IDisposable
                   }
                   resultData.Add(columns[i], rowData);
             }
+            
 
             return new DataFrame(rowCount, columnCount, resultData);
       }

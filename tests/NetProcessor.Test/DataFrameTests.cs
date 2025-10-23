@@ -17,7 +17,6 @@ public class DataFrameTests
         Assert.NotNull(ages);
         Assert.Equal(3, ages.Length);
     }
-
     [Fact]
     public void DataFrame_Shape()
     {
@@ -26,7 +25,6 @@ public class DataFrameTests
 
         Assert.Equal((3, 2), df.Shape);
     }
-
     [Fact]
     public void DataFrame_RowIndex()
     {
@@ -37,7 +35,6 @@ public class DataFrameTests
 
         Assert.NotNull(jhon);
     }
-
     [Fact]
     public void DataFrame_GetRows()
     {
@@ -48,7 +45,6 @@ public class DataFrameTests
 
         Assert.NotNull(rows);
     }
-
     [Fact]
     public void DataFrame_DisposeResources()
     {
@@ -58,7 +54,6 @@ public class DataFrameTests
 
         }
     }
-
     [Fact]
     public void DataFrame_Column()
     {
@@ -93,7 +88,6 @@ public class DataFrameTests
 
         Assert.NotNull(g);
     }
-
     [Fact]
     public void apply_function_to_column()
     {
@@ -109,7 +103,6 @@ public class DataFrameTests
 
         Assert.NotNull(values);
     }
-
     [Fact]
     public void Import_From_CSV()
     {
@@ -120,7 +113,6 @@ public class DataFrameTests
         Assert.Equal(500, df.Rows);
         Assert.NotNull(df);
     }
-
     [Fact]
     public void Import_From_CSV_UsedCarsDataSet()
     {
@@ -131,7 +123,6 @@ public class DataFrameTests
         Assert.Equal(10_000, df.Rows);
         Assert.NotNull(df);
     }
-
     [Fact]
     public void DataFrame_2GB_LoadTest()
     {
@@ -143,7 +134,6 @@ public class DataFrameTests
             Assert.NotNull(df);
         }
     }
-
     [Fact]
     public void DataFrame_Top()
     {
@@ -154,7 +144,6 @@ public class DataFrameTests
 
         Assert.NotNull(top);
     }
-
     [Fact]
     public void DataFrame_Filters()
     {
@@ -169,7 +158,6 @@ public class DataFrameTests
         Assert.Equal(1, dfFiltered.Rows);
 
     }
-
     [Fact]
     public void DataFrame_GetColumns()
     {
