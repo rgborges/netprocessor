@@ -169,6 +169,15 @@ public class DataFrameTests
         Assert.NotNull(columns);
     }
 
+    [Fact]
+    public void DataFrame_Apply()
+    {
+        var df = new DataFrame("names", new[] { "John Doe", "Maria", "Stella" });
+        
+        df.Apply("names", name => name.GetHashCode());
 
-
+        var i = df.GetRows(0, 1).First();
+        
+        Assert.NotEqual("John Doe", i);
+    }
 }

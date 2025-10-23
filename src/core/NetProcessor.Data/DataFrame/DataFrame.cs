@@ -197,6 +197,21 @@ public class DataFrame : IDisposable
 
             return result;
       }
+
+      public void Apply(string columnName, Func<object, object> func)
+      {
+            if (!Data.ContainsKey(columnName))
+            {
+                  throw new ArgumentException($"Column '{columnName}' does not exist in the DataFrame.");
+            }
+            
+            var columaData =  Data[columnName];
+
+            for (int i = 0; i < columaData.Length; i++)
+            {
+                  Data[columnName][i] = func(columaData[i]);
+            }
+      }
       /// <summary>
       ///Remove a column from the dataframe. 
       /// </summary>
@@ -309,8 +324,7 @@ public class DataFrame : IDisposable
                   resultData.Add(columns[i], rowData);
             }
             
-
-            return new DataFrame(rowCount, columnCount, resultData);
+            return new DataFrame(rowCount, columnCount, resultData, columns);
       }
 
       public static IEnumerable<DataFrame> FromCSVInChunks(string path,int chunkSize = 100, bool header = true, char delimiter = ',', string[] columns = null)
@@ -342,6 +356,7 @@ public class DataFrame : IDisposable
                         firstTime = false;
                   }
                   rowCount = lines.Length - 1;
+                  
                   string[,] data = new string[rowCount, columnCount];
                   // make a function to parse the string data splited by ',' to data multidimensional array
                   for (int i = 1; i <= rowCount; i++)
