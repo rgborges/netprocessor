@@ -2,8 +2,6 @@ using NetProcessor.Data.DataFrame;
 
 namespace NetProcessor.Test;
 
-using NetProcessor.Data;
-
 public class DataFrameTests
 {
     [Fact]

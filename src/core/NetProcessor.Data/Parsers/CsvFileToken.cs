@@ -8,10 +8,9 @@ public class CsvTokenizer : ITextTokenRule<CsvFileTokens>, IToken
             this._definitions = new TokenDefinition<CsvFileTokens>();
             _definitions.AddDefinition('\n', CsvFileTokens.EndOfLine);
             _definitions.AddDefinition('"', CsvFileTokens.OpenContent);
-            if (config is not null)
-            {
-                  config = new CsvTokenizerConfiguration();
-            }
+            
+            config ??= new CsvTokenizerConfiguration();
+
             _definitions.AddDefinition(config.CsvSplitChar, CsvFileTokens.SeparateChar);
 
       }

@@ -107,6 +107,7 @@ public static class CSV
                         dataResult.Add(generic);
                   }
                   result.Finish(dataResult);
+                  
                   return result;
             }
             catch

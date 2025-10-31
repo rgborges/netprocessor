@@ -1,43 +1,25 @@
 namespace NetProcessor.Data.Parsers;
 
-// public class CsvParser<T, TEnumTokenType> : TextParser<T, TEnumTokenType>
-// {
-//       private readonly CsvTokenizerConfiguration _config;
-      // public CsvParser(TextParserOptions options, CsvTokenizerConfiguration config) : base(options)
-      // {
-      //       _config = config;
-      // }
-      // public override DataProcessingOperation ParseLine(string line)
-      // {
-      //       try
-      //       {
-      //             var tokenizer = new CsvTokenizer(_config);
-      //             var tokensResult = tokenizer.GetTokens(line);
-      //             var properties = typeof(T).GetProperties();
-      //             int propCount = properties.Count();
-                  
-      //             var valueResult = tokensResult
-      //             .Where(x => (CsvFileTokens)x.Token == CsvFileTokens.Content)
-      //             .Where(x => !String.IsNullOrEmpty(x.Value))
-      //             .ToList();
 
-      //             if (valueResult.Count() != properties.Count())
-      //             {
-      //                   //Add line error
-      //             }
 
-      //             var tmpObject = Activator.CreateInstance<T>();
+/// <summary>
+/// Generic parser parse CSV line
+/// </summary>
+public struct CsvParser()
+{
+    /// <summary>
+    /// Parses a line string of a CSV file
+    /// </summary>
+    /// <param name="line"></param>
+    /// <returns></returns>
+    public TokenSearchRecord[] ParseLine(string line, IToken tokens)
+    {
+        if(string.IsNullOrEmpty(line))
+        {
+            return Array.Empty<TokenSearchRecord>();
+        }
 
-      //             for (int i = 0; i <= properties.Length; i++)
-      //             {
-      //                   properties[i].SetValue(tmpObject, valueResult[i]);
-      //             }
+        return tokens.GetTokens(line);
+    }
+}
 
-      //       }
-      //       catch
-      //       {
-      //             throw;
-      //       }
-      //       return base.ParseLine(line);
-      // }
-// }
