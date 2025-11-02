@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Diagnostics;
+using NetProcessor.Data.Parsers;
 using NetProcessor.Data.Result.Interfaces;
 
 namespace NetProcessor.Data.DataFrame;
@@ -288,13 +289,27 @@ public class DataFrame : IDisposable
                   Debug.WriteLine("Warning: The file is larger than 10MB. Consider using a more efficient method for large files.");
                   throw new NotSupportedException("The file is larger than 10MB. Use the instance format");
             }
+            var parser = new CsvParser();
+
+            var parserOptions = new CsvTokenizerConfiguration()
+            {
+                  CsvSplitChar = delimiter
+            };
 
 
+            var tokenizer = new CsvTokenizer(parserOptions);
+            
             var lines = File.ReadAllLines(path);
 
             if (header)
             {
-                  columns = lines[0].Split(delimiter);
+                  var tokens = parser.ParseLine(lines[0], tokenizer);
+
+                  columns = tokens
+                        .Where(t => (CsvTokens)t.Token == CsvTokens.Content)
+                        .Select(x => x.Value)
+                        .ToArray<String>();
+
                   columnCount = columns.Length;
             }
 
@@ -304,8 +319,13 @@ public class DataFrame : IDisposable
 
             for (int i = 1; i <= rowCount; i++)
             {
-                  var line = lines[i].Split(delimiter);
-                  
+                  var tokens = parser.ParseLine(lines[i], tokenizer);
+
+                  var line = tokens
+                              .Where(t => (CsvTokens)t.Token == CsvTokens.Content)
+                              .Select(t => t.Value)
+                              .ToArray<string>();
+
                   for (int j = 0; j < columnCount; j++)
                   {
                         data[i - 1, j] = line[j];
